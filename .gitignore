@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+.uv-cache/
+.model-cache/
+*.pyc
+
+# macOS
+.DS_Store
+
+# 临时与日志
+tmp/
+*.log

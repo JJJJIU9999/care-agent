@@ -1,0 +1,153 @@
+{
+  "capturedAt": "2026-09-05T05:21:41.865422+00:00",
+  "model": "intfloat/multilingual-e5-small",
+  "modelRevision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+  "device": "cpu",
+  "dimensions": 384,
+  "corpusCount": 20,
+  "queryCount": 10,
+  "inScopeQueryCount": 7,
+  "parameters": {
+    "normalizeEmbeddings": true,
+    "topK": 5,
+    "queryPrefix": "query: ",
+    "documentPrefix": "passage: "
+  },
+  "datasetSha256": {
+    "questions": "067293122723ce0082be8c7e6ab673769feea4a7a4614690b2df5d12ce503f9c",
+    "corpus": "e005e335f0b00c8a0f4b086c4eb25e5cdb25706f2ef811c1866f1072dfe9b073"
+  },
+  "dependencyVersions": {
+    "sentenceTransformers": "6.0.1",
+    "torch": "2.14.0",
+    "transformers": "5.16.1"
+  },
+  "loadMs": 897.95,
+  "documentBatchMs": 211.73,
+  "averageQueryMs": 5.66,
+  "p95QueryMs": 6.21,
+  "errorCount": 0,
+  "apiCostUsd": 0,
+  "hitAt1": 1.0,
+  "hitAt5": 1.0,
+  "mrr": 1.0,
+  "details": [
+    {
+      "questionId": "w0-in-01",
+      "top5PassageIds": [
+        "p01",
+        "p02",
+        "p11",
+        "p19",
+        "p12"
+      ],
+      "topScore": 0.964158,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-02",
+      "top5PassageIds": [
+        "p02",
+        "p01",
+        "p09",
+        "p11",
+        "p13"
+      ],
+      "topScore": 0.941274,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-03",
+      "top5PassageIds": [
+        "p03",
+        "p02",
+        "p01",
+        "p11",
+        "p08"
+      ],
+      "topScore": 0.941195,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-04",
+      "top5PassageIds": [
+        "p04",
+        "p01",
+        "p10",
+        "p16",
+        "p02"
+      ],
+      "topScore": 0.909522,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-05",
+      "top5PassageIds": [
+        "p05",
+        "p11",
+        "p10",
+        "p18",
+        "p08"
+      ],
+      "topScore": 0.945809,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-06",
+      "top5PassageIds": [
+        "p06",
+        "p13",
+        "p15",
+        "p14",
+        "p01"
+      ],
+      "topScore": 0.943501,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-in-07",
+      "top5PassageIds": [
+        "p07",
+        "p01",
+        "p11",
+        "p09",
+        "p02"
+      ],
+      "topScore": 0.933629,
+      "goldRank": 1
+    },
+    {
+      "questionId": "w0-out-01",
+      "top5PassageIds": [
+        "p01",
+        "p11",
+        "p19",
+        "p09",
+        "p14"
+      ],
+      "topScore": 0.897544
+    },
+    {
+      "questionId": "w0-out-02",
+      "top5PassageIds": [
+        "p12",
+        "p09",
+        "p15",
+        "p06",
+        "p01"
+      ],
+      "topScore": 0.866502
+    },
+    {
+      "questionId": "w0-out-03",
+      "top5PassageIds": [
+        "p13",
+        "p14",
+        "p09",
+        "p11",
+        "p17"
+      ],
+      "topScore": 0.880373
+    }
+  ]
+}

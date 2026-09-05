@@ -1,0 +1,146 @@
+{
+  "capturedAt": "2026-09-05T10:46:34.085478+00:00",
+  "knowledgeFile": "data/policies/curated/week1-policy-pack.md",
+  "chunkCount": 7,
+  "questionCount": 10,
+  "behaviorCorrect": 10,
+  "behaviorAccuracy": 1.0,
+  "indexMs": 97.21,
+  "averageQuestionMs": 2.7,
+  "p95QuestionMs": 4.5,
+  "hitAt1": 1.0,
+  "hitAt5": 1.0,
+  "mrr": 1.0,
+  "failureReasons": [],
+  "details": [
+    {
+      "questionId": "w0-in-01",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.883839,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-02",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-home-adaptation",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.849502,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-03",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "chengdu-care-subsidy-funding",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.845176,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-04",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.817476,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-05",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-nursing-bed-target",
+        "chengdu-measures-validity",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance"
+      ],
+      "topScore": 0.926133,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-06",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "long-term-care-eligibility",
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service"
+      ],
+      "topScore": 0.798832,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-07",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-care-subsidy-funding",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.866056,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-01",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-02",
+      "expectedBehavior": "REFUSE_MEDICAL",
+      "actualBehavior": "REFUSE_MEDICAL",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-03",
+      "expectedBehavior": "REFUSE_UNCONFIRMED_BOOKING",
+      "actualBehavior": "REFUSE_UNCONFIRMED_BOOKING",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    }
+  ]
+}

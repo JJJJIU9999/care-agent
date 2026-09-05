@@ -1,0 +1,83 @@
+{
+  "capturedAt": "2026-09-05",
+  "documents": [
+    {
+      "file": "raw/01-long-term-care-insurance.pdf",
+      "title": "关于省本级基本医疗保险参保人员参加成都市长期护理保险制度试点的通知（征求意见稿）",
+      "issuingOrganization": "四川省医疗保障局",
+      "publishedDate": "2022-06-15",
+      "sourceUrl": "https://ylbzj.sc.gov.cn/scsybj/nc010416/2022/6/15/f29c8fe5589c4340af4bf4c441795502/files/e0315169f6f64aeeb978fc15abfe1601.pdf",
+      "sha256": "83d6ddba27112f96925a4f37cc7e8005cef03c80295589972af7a67e0b1607ca",
+      "status": "REJECTED_DRAFT",
+      "parseDecision": "PARSE_FIXTURE_ONLY",
+      "notes": "六页文本型 PDF；视觉核验发现标题含征求意见稿，不得作为正式政策回答依据。"
+    },
+    {
+      "file": "raw/02-basic-elderly-care-plan.pdf",
+      "title": "四川省推进基本养老服务体系建设实施方案",
+      "issuingOrganization": "四川省人民政府办公厅",
+      "publishedDate": "2023-10-23",
+      "sourceUrl": "https://www.sc.gov.cn/10462/zfwjts/2023/10/24/467181d976cb40d881a583f48b8dbf2b/files/%E5%B7%9D%E5%8A%9E%E5%8F%9135%E5%8F%B7%EF%BC%88%E5%85%AC%E5%BC%80%E7%89%88%EF%BC%89.pdf",
+      "sha256": "1622676c81f13f0d83a38c91b3ec3ea534726b035474c6b30abb89c62fd51a59",
+      "status": "CANDIDATE",
+      "parseDecision": "AUTO_TEXT_PLUS_MANUAL_TABLE",
+      "notes": "前十一页正文自动提取；第十二至十四页六列表格人工转 Markdown 并保留页码。"
+    },
+    {
+      "file": "raw/03-basic-elderly-care-list.pdf",
+      "title": "四川省基本养老服务清单",
+      "issuingOrganization": "四川省人民政府办公厅",
+      "publishedDate": "2023-10-23",
+      "sourceUrl": "https://www.sc.gov.cn/10462/zfwjts/2023/10/24/467181d976cb40d881a583f48b8dbf2b/files/1348c5847fea4bfcbcc6acc35a0bf163.pdf",
+      "sha256": "3e6f28213274287dc7b15d1f107586fc01fba43d653fa3cd05588aed2d8c6ed6",
+      "status": "DUPLICATE_ATTACHMENT",
+      "parseDecision": "MANUAL_MARKDOWN",
+      "notes": "内容与实施方案第十二至十四页相同；仅保留为表格解析样本，不重复入库。"
+    },
+    {
+      "file": "raw/04-chengdu-elderly-care-measures.html",
+      "title": "关于加快推进养老服务发展若干措施",
+      "issuingOrganization": "成都市人民政府办公厅",
+      "publishedDate": "2022-05-19",
+      "sourceUrl": "https://cds.sczwfw.gov.cn/art/2022/5/23/art_15398_181338.html",
+      "sha256": "7a5f24ddb54bdebf2d61427e7eadd707d75b7cba7146f55daad6cbb0dea98116",
+      "status": "CANDIDATE",
+      "parseDecision": "MANUAL_MARKDOWN_FROM_HTML",
+      "notes": "正文结构清晰；网页含导航和脚本，先抽取正文并人工核对。页面声明自 2022-06-20 起施行，有效期五年。"
+    },
+    {
+      "file": "raw/05-long-term-care-policy-explainer.html",
+      "title": "关于省本级基本医疗保险参保人员参加成都市长期护理保险制度试点的通知政策解读",
+      "issuingOrganization": "四川省医疗保障局",
+      "publishedDate": "2022-07-04",
+      "sourceUrl": "https://ylbzj.sc.gov.cn/scsybj/010900/2022/7/4/b038cdc08cfa4d90941ce5dddb5a97c9.shtml",
+      "sha256": "ff4ccbf090d999a0a44168ea7725c88c53a33ace892a9ca940122c0b7a1a90af",
+      "status": "CANDIDATE",
+      "parseDecision": "MANUAL_MARKDOWN_FROM_HTML",
+      "notes": "用正式政策解读替代征求意见稿；入库前仍需核对原文有效期与当前政策状态。"
+    },
+    {
+      "file": "raw/06-chengdu-care-subsidy-pilot.html",
+      "title": "成都市财政局护航失能老年人养老服务消费补贴试点实施",
+      "issuingOrganization": "成都市财政局",
+      "publishedDate": "2025-08-25",
+      "sourceUrl": "https://czt.sc.gov.cn/scczt/sxdt/2025/8/25/ee3366b86ba74b479e255eeb4421feb9.shtml",
+      "sha256": "a03484b7cc8ea34ee2c40d23e2627994632be6f5f2ceb7ccd1c66360a48dc201",
+      "status": "CANDIDATE",
+      "parseDecision": "MANUAL_MARKDOWN_FROM_HTML",
+      "notes": "成都市财政局来源的试点实施信息；属于政策动态，不替代正式通知。"
+    },
+    {
+      "file": "raw/07-community-elderly-care-complex-guide-scan.pdf",
+      "title": "达州市民政局关于转发《四川省民政厅关于印发〈四川省社区养老服务综合体建设导则（试行）〉的通知》的通知",
+      "issuingOrganization": "达州市民政局（转发四川省民政厅）",
+      "publishedDate": "2020-06-15",
+      "sourceUrl": "http://mzj.dazhou.gov.cn/news-show-4497.html",
+      "sha256": "e8a4420e2a212fa947e78326f36ee4abc402f4151d0bf031c26a62820e17e44d",
+      "status": "CANDIDATE",
+      "parseDecision": "MANUAL_MARKDOWN",
+      "notes": "周 0 唯一纯扫描件样本：10 页、每页为 2410×3438 彩色 JPEG、无文本层。核心文件为川民发〔2020〕67号《四川省社区养老服务综合体建设导则（试行）》；网站发布日期 2020-12-29。固定不做 OCR，人工转 Markdown 并保留原件链接。"
+    }
+  ]
+}
+
