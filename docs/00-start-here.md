@@ -43,7 +43,7 @@ $care-agent-writer-handoff 切换到 Codex
 /Users/jiu/Developer/Projects/Python/care-agent
 
 先只读运行 pwd、git status --short --branch 和 find . -maxdepth 1 -type f -print。
-当前目录不是 Git 仓库，git status 失败是已知现状；不要执行 git init。
+当前目录已是 Git 仓库（origin: github.com/JJJJIU9999/care-agent，默认分支 main）；git status 正常工作。
 
 先完整阅读 README.md、AGENTS.md、task_plan.md、findings.md、progress.md
 以及 docs/00-start-here.md 到 docs/09-week0-feasibility.md。

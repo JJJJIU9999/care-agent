@@ -91,7 +91,7 @@ git status --short --branch
 find . -maxdepth 1 -type f -print
 ```
 
-`pwd` 不匹配时禁止修改文件。当前没有 `.git`，所以第二条会失败；Harness 应记录该已知事实并继续读取文件，不得用初始化 Git 作为修复。
+`pwd` 不匹配时禁止修改文件。项目已于 2026-09-05 初始化并推送到 `github.com/JJJJIU9999/care-agent`（默认分支 `main`）；`git status --short --branch` 现在可正常确认工作树与上游状态。
 
 ## 防冲突规则
 

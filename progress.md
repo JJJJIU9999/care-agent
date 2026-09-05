@@ -151,4 +151,15 @@
 - pgvector 相似度检索验证：查询“高龄津贴面向多少周岁”命中“高龄津贴”切片（相似度 0.75），其次为 PDF 第 3 页与“家庭适老化改造”，证明上传 → 切片 → Embedding → pgvector 写入 → 余弦检索整条链路可用。
 - 验证后已停止临时 Uvicorn 与 Compose 容器；数据卷 `care-agent_pgdata` 保留，可 `docker compose up -d` 恢复。
 - 下一步唯一任务：按路线图进入周 3——Spring Security/JWT、JPA/Flyway、服务与时段种子、预约草案与确认事务（含原子消费、幂等、容量扣减、取消回补）。
-- 当前工作树状态：目录仍不是 Git 仓库，`git status --short --branch` 返回 exit 128，未执行 `git init`。
+- 当前工作树状态：目录已初始化为 Git 仓库并推送到 `github.com/JJJJIU9999/care-agent`（main，提交 `4ea9157`），详见下方“Git 仓库初始化与推送”一节。
+
+## 2026-09-05 Git 仓库初始化与推送
+
+- 用户要求把项目上传到自己的 GitHub 账号，并按阶段组织分支；经确认选择：公开仓库 `care-agent`，只推 `main` 现状，此后每周基于 main 开真实新分支（不做伪造的历史快照）。
+- 上传安全检查：`.env`（真实密钥）、`.venv`/`.uv-cache`/`.model-cache`/`.pytest_cache`、`__pycache__` 均已被 `.gitignore` 忽略；`data/policies/raw/` 为公开政策文件（单文件最大 3.95 MB），保留为证据语料。
+- 已补充 `.gitignore`：`.DS_Store`、`tmp/`、`*.log`。
+- 已 `git init -b main`，本地提交身份与既有仓库一致（`JJJJIU9999 <1060389344@qq.com>`）。
+- 暂存审计：54 个文件，无 `.env`、无缓存、无 `sk-`/`gho_`/私钥等真实密钥模式。
+- 初始提交 `4ea9157`“初始提交：周 0-2 完成（可行性验证、最小 CLI RAG、FastAPI 导入链路与 pgvector rag schema）”。
+- 已创建公开仓库 `https://github.com/JJJJIU9999/care-agent` 并推送 `main`，`origin/main` 跟踪正常。
+- 下一步唯一任务：进入周 3 时从 `main` 检出新分支（如 `week3`）后再提交，保持按阶段分叉的历史。
