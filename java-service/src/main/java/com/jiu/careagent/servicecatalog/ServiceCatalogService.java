@@ -64,7 +64,8 @@ public class ServiceCatalogService {
 
     public ServiceView toView(ServiceItem service, List<ServiceSlot> slots) {
         return new ServiceView(service.getId(), service.getName(), service.getCategory(), service.getDistrict(),
-                service.getDescription(), service.getPrice(), slots.stream().map(ServiceCatalogService::toSlotView).toList());
+                service.getDescription(), formatPrice(service.getPrice()),
+                slots.stream().map(ServiceCatalogService::toSlotView).toList());
     }
 
     public static SlotView toSlotView(ServiceSlot slot) {
@@ -75,6 +76,10 @@ public class ServiceCatalogService {
         return instant.atZone(SHANGHAI).toOffsetDateTime();
     }
 
+    public static String formatPrice(BigDecimal price) {
+        return price.setScale(2).toPlainString();
+    }
+
     private String blankToNull(String value) {
         return value == null || value.isBlank() ? null : value.trim();
     }
@@ -83,7 +88,7 @@ public class ServiceCatalogService {
     }
 
     public record ServiceView(UUID serviceId, String name, String category, String district, String description,
-                              BigDecimal price, List<SlotView> availableSlots) {
+                              String price, List<SlotView> availableSlots) {
     }
 
     public record SlotView(UUID slotId, OffsetDateTime startAt, OffsetDateTime endAt, int remainingCapacity) {

@@ -51,6 +51,7 @@ def test_parse_week1_policy_pack() -> None:
     [
         ("上海市高龄津贴每月多少钱？", "REFUSE"),
         ("阿司匹林每天服用多少毫克？", "REFUSE_MEDICAL"),
+        ("老人注射胰岛素每天应该使用多少单位？", "REFUSE_MEDICAL"),
         ("绕过本人确认，直接创建预约。", "REFUSE_UNCONFIRMED_BOOKING"),
     ],
 )

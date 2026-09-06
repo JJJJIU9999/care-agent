@@ -132,10 +132,14 @@ def similarity_search(
     """按 pgvector 余弦距离返回最相近的切片；similarity = 1 - 余弦距离。"""
     rows = conn.execute(
         """
-        SELECT id, document_id, section, page_number, chunk_index, content,
-               1 - (embedding <=> %s::vector) AS similarity
-        FROM rag.document_chunk
-        ORDER BY embedding <=> %s::vector
+        SELECT chunk.id, chunk.document_id, chunk.section, chunk.page_number,
+               chunk.chunk_index, chunk.content, document.title AS document_title,
+               document.issuing_organization, document.source_url,
+               1 - (chunk.embedding <=> %s::vector) AS similarity
+        FROM rag.document_chunk chunk
+        JOIN rag.knowledge_document document ON document.id = chunk.document_id
+        WHERE document.status = 'COMPLETED'
+        ORDER BY chunk.embedding <=> %s::vector
         LIMIT %s
         """,
         (

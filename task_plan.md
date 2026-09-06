@@ -117,6 +117,42 @@
 
 只实现路线图列出的 Java 主业务闭环；不开发 Vue、服务管理 CRUD、通用审计框架、Redis、Kubernetes、OCR 或全文检索。最终预约只信任 `draftId`、当前认证用户和 `Idempotency-Key`。
 
+## 周 4 Agent 与 SSE（已验收）
+
+### 已核对的启动基线
+
+- [x] 工作目录为 `/Users/jiu/Developer/Projects/Python/care-agent`
+- [x] `CURRENT_WRITER: Codex`
+- [x] `week3` / `origin/week3` 干净且最新提交为 `df5997a`
+- [x] 从 `week3` 创建累计分支 `week4`，未合并或改写 `main`
+- [x] 完整重读周 4 所需规则、架构、API、安全、测试和交接文档
+
+### 可验证清单
+
+- [x] 盘点 Python、Java、Compose/Nginx 现有能力及测试入口，复用周 3 服务查询和草案能力
+- [x] Python：实现政策、服务、混合三类确定性路由与仅有的 `search_services`、`prepare_appointment` 受控工具
+- [x] Python：实现受 `X-Internal-Token` 与规范化 Request ID 约束的 `/internal/v1/agent/runs` SSE；上下文仅接受上一组 USER、ASSISTANT 与当前问题
+- [x] Java：实现会话归属校验、从当前 JWT 构造 `userId`、统一公开 SSE 代理及 Request ID 规范化/结构化日志
+- [x] Java 工具接口：复用服务查询与草案事务，校验内部 Token、用户/服务/时段与 Request ID；不允许 Python 创建最终预约
+- [x] 断连链路：Java 取消 Python 上游订阅，Python 停止后续模型流和工具调用
+- [x] Compose/Nginx：加入 Python、内部网络与 SSE 无缓冲/长超时配置，不公开内部路由
+- [x] 扩充为 21 道知识库内、9 道知识库外评测；保存真实运行结果，不修改题目伪造提升
+- [x] 自动验证：三类路由、工具权限/参数、内部 Token 拒绝、SSE 事件顺序/Request ID/终止、断连取消，以及 Java/Python 回归
+- [x] 本地验证：`docker compose config --quiet` 与必要的端到端冒烟；真实事件顺序、Request ID 和 Java 草案数据均已核对
+- [x] 文档收口：更新 README、task_plan、findings、progress，写明修改、命令、真实结果、失败、限制与唯一下一步
+- [x] 仅在全部验收实际通过后，按 `$care-agent-weekly-github-publish` 正常提交并推送 `origin/week4`
+
+### 周 4 边界
+
+不开发 Vue、Redis、Kubernetes、OCR、全文检索、复杂 Agent 框架或长期记忆；不重写周 3 预约确认事务；模型和 Python 都不能创建最终预约；不读取、输出或提交 `.env` 真实值；20 路 SSE 压测仍是周 6 计划，未运行前不得标记完成。
+
+### 阻断：公开 SSE 与会话契约
+
+- `docs/00-start-here.md` 指向 `/api/v1/agent/runs`，但 `docs/03-api-contract.md` 规定公开入口为 `POST /api/v1/conversations/{conversationId}/messages`，并要求 Java 验证会话归属。
+- `docs/04-data-model.md` 设计了 `conversation` / `message_metadata`，但已验收的 Week 3 Flyway `V1__create_app_schema.sql`、Java 实体和接口均未实现它们。
+- 在未获决定前，不会私自选择公开路由，也不会新增迁移、会话存储或绕过归属校验。需要用户明确采用 API 契约会话路由（并授权最小会话迁移/API），或将契约统一为无会话的 `/api/v1/agent/runs` 及其所有权替代规则。
+- [x] 用户已于 2026-09-06 确认采用 `docs/03-api-contract.md` 的会话路由，并授权最小 `conversation` / `message_metadata` 迁移与会话 API；阻断解除。
+
 ## 错误记录
 
 | 日期 | 问题 | 处理 |
@@ -149,3 +185,11 @@
 | 2026-09-06 | 受限环境首次无法访问本机 Docker socket | 以最小本机权限复跑 Testcontainers；真实 PostgreSQL 集成测试 6/6 通过 |
 | 2026-09-06 | Docker CLI 凭证助手在非交互环境中挂起 | 使用 `/private/tmp` 下的空 Docker 配置并直接调用 Compose 插件，不修改用户 Docker 配置 |
 | 2026-09-06 | Python 回归首次无法写默认 `uv` 缓存 | 继续使用项目内 `UV_CACHE_DIR=.uv-cache` 并离线运行，34/34 通过 |
+| 2026-09-06 | 周 4 首次 Python 聚焦测试因 `httpx` 从 dev 移到运行依赖后锁文件待刷新，`uv` 在受限网络中访问 PyPI 失败 | 记录为依赖解析问题；改用现有缓存执行 `uv lock --offline`，再离线复跑测试 |
+| 2026-09-06 | 周 4 Python 聚焦测试 7/9，通过前两个 SSE 用例因服务卡片的 `name` 字段与 `_event(name, ...)` 形参重名失败 | 将内部形参改为 `event_name`，保留契约数据中的 `name`，再复跑聚焦测试 |
+| 2026-09-06 | 周 4 Java 首次离线编译无法解析本地已有但来源仓库 ID 不匹配的 Spring Boot parent POM | 不是源码编译错误；沿用周 3 的可审计 Maven 镜像设置在线编译，必要时申请最小网络权限 |
+| 2026-09-06 | 周 4 首次 21+9 评测为 29/30；胰岛素注射剂量问题被普通库外拒答，而非医疗安全拒答 | 不修改评测题；扩充既有医疗守卫的药物注射关键词并增加回归测试后原样复跑 |
+| 2026-09-06 | 首次 Python 容器构建按默认 Linux PyTorch 依赖开始下载数 GB NVIDIA/CUDA 包 | 主动中止臃肿构建；按官方 uv/PyTorch 配置为 Linux 固定 CPU wheel 源后重锁和重建 |
+| 2026-09-06 | CPU-only Python 镜像成功后，Java 镜像停在非必要的 `dependency:go-offline` 超过 90 秒无输出 | 中止挂起；删除预下载层，直接执行已有的 Maven package 构建以减少一个不稳定网络阶段 |
+| 2026-09-06 | 周 4 首次完整 Compose 启动时 PostgreSQL/Python 健康，但 Java 退出，Nginx `/health` 返回 502 | 日志定位为测试辅助构造器加入后 Spring 无法选择生产构造器；显式标注生产构造器注入，重建后复验 |
+| 2026-09-06 | 首次公开 SSE 冒烟完成到 `done` 且 Request ID 一致，但真实草案检查发现 `displayPrice` 为 JSON 数字而非契约字符串 | 在 Java 权威服务/草案 DTO 层按数据库金额输出两位小数字符串，增加断言后重建复验；不修改模型或草案数据来源 |

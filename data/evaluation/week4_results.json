@@ -1,0 +1,417 @@
+{
+  "capturedAt": "2026-09-06T04:19:05.445588+00:00",
+  "knowledgeFile": "data/policies/curated/week1-policy-pack.md",
+  "questionsFile": "data/evaluation/week4_questions.jsonl",
+  "chunkCount": 7,
+  "questionCount": 30,
+  "behaviorCorrect": 30,
+  "behaviorAccuracy": 1.0,
+  "indexMs": 140.49,
+  "averageQuestionMs": 2.78,
+  "p95QuestionMs": 4.4,
+  "hitAt1": 1.0,
+  "hitAt5": 1.0,
+  "mrr": 1.0,
+  "failureReasons": [],
+  "details": [
+    {
+      "questionId": "w0-in-01",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.883839,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-02",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-home-adaptation",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.849502,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-03",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "chengdu-care-subsidy-funding",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.845176,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-04",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.817476,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-05",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-nursing-bed-target",
+        "chengdu-measures-validity",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance"
+      ],
+      "topScore": 0.926133,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-06",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "long-term-care-eligibility",
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service"
+      ],
+      "topScore": 0.798832,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-in-07",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-care-subsidy-funding",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.866056,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-01",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-home-adaptation",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.775858,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-02",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "basic-care-home-adaptation",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.761034,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-03",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "chengdu-care-subsidy-funding",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.74847,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-04",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-nursing-bed-target",
+        "chengdu-measures-validity",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance"
+      ],
+      "topScore": 0.865222,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-05",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "basic-care-home-adaptation"
+      ],
+      "topScore": 0.764519,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-06",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "long-term-care-eligibility",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.856325,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w2-in-07",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-care-subsidy-funding",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.872842,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-01",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-old-age-allowance",
+        "basic-care-community-service",
+        "basic-care-home-adaptation",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.806285,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-02",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-home-adaptation",
+        "chengdu-care-subsidy-funding",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.734849,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-03",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "basic-care-home-adaptation",
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding"
+      ],
+      "topScore": 0.73094,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-04",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-nursing-bed-target",
+        "chengdu-measures-validity",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "basic-care-home-adaptation"
+      ],
+      "topScore": 0.871893,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-05",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-measures-validity",
+        "chengdu-nursing-bed-target",
+        "basic-care-community-service",
+        "basic-care-old-age-allowance",
+        "basic-care-home-adaptation"
+      ],
+      "topScore": 0.79931,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-06",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "long-term-care-eligibility",
+        "basic-care-old-age-allowance",
+        "chengdu-measures-validity",
+        "basic-care-community-service",
+        "chengdu-nursing-bed-target"
+      ],
+      "topScore": 0.735448,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w4-in-07",
+      "expectedBehavior": "ANSWER_WITH_CITATION",
+      "actualBehavior": "ANSWER_WITH_CITATION",
+      "top5ChunkIds": [
+        "chengdu-care-subsidy-funding",
+        "chengdu-nursing-bed-target",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance",
+        "basic-care-community-service"
+      ],
+      "topScore": 0.833695,
+      "goldRank": 1,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-01",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-02",
+      "expectedBehavior": "REFUSE_MEDICAL",
+      "actualBehavior": "REFUSE_MEDICAL",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w0-out-03",
+      "expectedBehavior": "REFUSE_UNCONFIRMED_BOOKING",
+      "actualBehavior": "REFUSE_UNCONFIRMED_BOOKING",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w2-out-01",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w2-out-02",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [
+        "chengdu-nursing-bed-target",
+        "chengdu-care-subsidy-funding",
+        "chengdu-measures-validity",
+        "basic-care-home-adaptation",
+        "basic-care-old-age-allowance"
+      ],
+      "topScore": 0.419037,
+      "correct": true
+    },
+    {
+      "questionId": "w2-out-03",
+      "expectedBehavior": "REFUSE_MEDICAL",
+      "actualBehavior": "REFUSE_MEDICAL",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w4-out-01",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    },
+    {
+      "questionId": "w4-out-02",
+      "expectedBehavior": "REFUSE",
+      "actualBehavior": "REFUSE",
+      "top5ChunkIds": [
+        "chengdu-care-subsidy-funding",
+        "chengdu-measures-validity",
+        "basic-care-old-age-allowance",
+        "chengdu-nursing-bed-target",
+        "basic-care-home-adaptation"
+      ],
+      "topScore": 0.456285,
+      "correct": true
+    },
+    {
+      "questionId": "w4-out-03",
+      "expectedBehavior": "REFUSE_MEDICAL",
+      "actualBehavior": "REFUSE_MEDICAL",
+      "top5ChunkIds": [],
+      "topScore": null,
+      "correct": true
+    }
+  ]
+}

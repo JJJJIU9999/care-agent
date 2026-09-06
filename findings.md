@@ -159,3 +159,29 @@
 - 发布操作继续受 `CURRENT_WRITER` 约束；发布完成周次不会自动转移写入权，也不会隐式合并 `main`。
 - 周分支采用累计检查点：新周必须包含前一已验收周；若 `main` 尚未包含前一周，则从前一周分支创建，不从旧 `main` 制造缺失代码的平行分支。
 - Git 在周 2 完成后才初始化，因此周 0–2 没有独立精确快照；Skill 明确禁止创建内容相同或近似重建的误导分支。
+
+## 2026-09-06 周 4 启动盘点
+
+- 已确认 `week4` 是从干净、已验收的 `week3` 提交 `df5997a` 创建的累计分支；`CURRENT_WRITER` 为 Codex。
+- Python 当前只有周 2 的同步 `/internal/v1/rag/answer`、知识导入和常量时间 `X-Internal-Token` 校验。`rag_cli` 已有医疗与绕过确认拒答、Top K 检索和“资料为不可信文本”的系统提示，可作为 Agent 政策分支的最小复用基础。
+- 周 4 需要新建受控 SSE 编排，但不得把模型输出直接映射为业务写入；服务检索和草案创建必须仍经 Java 内部工具接口，最终预约继续只走现有 Java 确认事务。
+- Java 已有 `RequestIdFilter`：公开入口将不合法 `X-Request-ID` 替换为 UUID 并回写响应。现有内部服务查询和草案接口已要求 Token 与 UUID Request ID，且 `DraftService.create` 会重新校验用户、服务、时段、容量并只生成 `PENDING` 草案，因此可直接成为 Python 的两个受控工具后端。
+- 当前 Compose 只有 PostgreSQL 与 Java，Python 尚未容器化，亦无 Nginx。周 4 必须以最小增量补齐 Python 容器、同一内部网络和只公开 Java/Nginx 的 SSE 路径；不能把 `/internal` 映射给浏览器。
+- 阻断发现：`docs/00-start-here.md` 的启动提示要求先固定 `/api/v1/agent/runs`，而 `docs/03-api-contract.md` 的规范公开路由是 `POST /api/v1/conversations/{conversationId}/messages`，并强制 Java 校验会话归属。`docs/04-data-model.md` 已设计会话表和只含元数据的消息表，但 Week 3 的 Flyway、实体、Repository、Controller 均未实现。选择其中任一实现路径都会改变接口或补充数据迁移，须由用户决定，不能自行扩大周 4 路线图。
+- 用户已确认采用 `docs/03-api-contract.md`：周 4 可新增最小会话迁移、创建会话 API、归属校验和消息元数据；仍不保存消息正文，也不增加长期记忆。
+- 最小实现决策：Java 保持现有 Servlet/Spring MVC 栈，用 Spring `RestClient` + `SseEmitter` 代理 Python 流并在 emitter 完成、超时或发送失败时关闭上游，不为单条 SSE 引入 WebFlux。Python 使用 FastAPI `StreamingResponse` 与已安装的 `httpx`/OpenAI 异步客户端，取消生成器任务时关闭模型流和工具请求。
+- 政策引用将从 `rag` schema 的 pgvector 检索结果联接 `knowledge_document`，返回真实 UUID、标题、机构、来源和定位；不会为周 1 静态切片伪造 `documentId`。本地端到端冒烟前需通过现有上传链路把人工 Markdown 入库。
+- 周 4 固定题集在不修改问题的前提下首次为 29/30；补齐“注射/胰岛素”医疗守卫后原样复跑为 30/30。21 道库内 Hit@1/Hit@5/MRR 均为 100%，9 道库外均按预期拒答；平均单题 2.78 ms、P95 4.37 ms、索引 139.41 ms。该结果只衡量固定 7 切片上的检索与行为守卫，不含模型生成、引用正确率或开放领域表现。
+- Java 真实 PostgreSQL 16.15 集成测试已应用 Flyway V1–V3 并通过 Hibernate validate；新增会话/SSE、内部工具边界与取消单测后 Java 为 9/9，原预约幂等、取消回补和 100 请求竞争容量 10 回归继续通过。
+- 首次 Linux Python 镜像解析到 CUDA 包。依据 uv 官方 PyTorch 集成方式，项目将 Linux 的直接 `torch` 来源限定为官方 `https://download.pytorch.org/whl/cpu` 显式索引；macOS 继续使用原 PyPI 来源，避免改变本机已验证环境。
+
+## 2026-09-06 周 4 实现结论
+
+- 路由只读取当前问题中的稳定关键词，得到政策、服务、混合三类；客户端提供的上一组问答只进入模型提示，不能触发工具或改变授权。
+- Python 只调用 Java 的 `search_services` 和 `prepare_appointment`。Java 从数据库重新校验用户、服务、时段、容量与价格，只返回 `PENDING` 草案；最终预约仍只由周 3 的公开确认事务创建。
+- Java 公开入口固定为 `POST /api/v1/conversations/{conversationId}/messages`，从 JWT subject 构造 `userId` 并校验会话归属。V3 只保存会话和消息元数据，不保存消息正文或长期记忆。
+- Java 在浏览器完成、超时、错误或发送失败时关闭 Python 响应流并取消工作线程；Python 在断连后关闭模型流，且不会继续检索服务或创建草案。两端均有可运行取消测试。
+- SSE 仅转发契约允许的七类事件，并拒绝上游 Request ID 不一致；Nginx 关闭 SSE 缓冲/缓存，读写超时均为 300 秒，且 `/internal` 经 Nginx 实测为 404。
+- 本地完整链路实测事件顺序为 `status,status,service_card,status,tool_confirmation,done`，所有事件 Request ID 一致，`tool_confirmation` 含 Java 真实草案 UUID、`"80.00"` 权威价格和过期时间。
+- 最终 Python 回归 46/46、Java 回归 10/10、Compose 配置校验通过。固定 21+9 题为 30/30，Hit@1/Hit@5/MRR 均为 100%，索引 140.49 ms、平均 2.78 ms、P95 4.40 ms；不外推到模型引用或生产性能。
+- 20 路 SSE 测试仍按路线图属于周 6，本周没有运行或宣称完成；Vue、Redis、Kubernetes、OCR、全文检索、复杂框架与长期记忆均未进入周 4。

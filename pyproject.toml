@@ -5,17 +5,26 @@ description = "CareAgent week 0 Python feasibility checks"
 requires-python = ">=3.14,<3.15"
 dependencies = [
     "fastapi>=0.116",
+    "httpx>=0.28",
     "openai>=1.100",
     "psycopg[binary]>=3.3.5",
     "pypdf>=6.17.0",
     "python-multipart>=0.0.32",
     "sentence-transformers>=6.0.1",
+    "torch>=2.14.0",
     "uvicorn>=0.35",
 ]
 
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 [dependency-groups]
 dev = [
-    "httpx>=0.28",
     "pytest>=8.4",
 ]
 
@@ -29,4 +38,3 @@ packages = ["src/care_agent_ai"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-

@@ -199,3 +199,43 @@
 - Skill 明确禁止隐式合并、强推、重写历史、删除分支和伪造周 0–2 历史；GitHub 发布不会改变 `CURRENT_WRITER`。
 - 已在 `AGENTS.md`、`docs/00-start-here.md` 和 `docs/08-agent-collaboration.md` 登记路径与调用示例，Harness 从项目入口即可发现。
 - 格式验证：`quick_validate.py` 返回 `Skill is valid!`；共享安装文件与三处入口引用一致，本记录随当前 `week3` 分支提交并推送。
+
+## 2026-09-06 周 4 启动
+
+- 已只读运行 `pwd`、`git status --short --branch`、`git log -3 --oneline`：目录正确，`week3` 工作树干净，`HEAD` 为已验收的 `df5997a`。
+- 已完整读取本周要求的 `AGENTS.md`、README、规划/发现/进度文件及指定架构、API、安全、测试、路线图和协作文档；`CURRENT_WRITER: Codex` 仍为唯一写入权。
+- 已从干净的 `week3` 创建累计分支 `week4`；未从旧 `main` 创建、未合并 `main`、未改写任何历史。
+- 已在 `task_plan.md` 建立周 4 可验证清单。当前尚未检查实现代码、尚未实现 SSE，也尚未运行任何周 4 测试或 20 路 SSE 压测。
+- 下一步唯一任务：盘点现有 Java、Python、Compose/Nginx 能力与测试入口，确认可复用的服务查询、草案和 RAG 边界后再实施最小垂直切片。
+- 已完成盘点：Python 可复用周 2 Token/RAG 守卫；Java 可复用 Request ID 过滤器、服务目录、内部草案及其数据库重新校验；Compose 尚未有 Python/Nginx。未改动任何业务代码或已验收预约事务。
+- 阻断：开发入口要求 `/api/v1/agent/runs`，API 契约却要求带会话归属的 `POST /api/v1/conversations/{conversationId}/messages`；数据模型定义的 `conversation` / `message_metadata` 未在 Week 3 Flyway 或 Java 实现。实现前需要用户决定是采用会话契约并授权最小会话迁移/API，还是统一为无会话路由与所有权规则；未获决定前不会自行修改契约或扩大范围。
+- 当前工作树状态：仅 `task_plan.md`、`findings.md`、`progress.md` 为本次启动和阻断记录而修改；尚未运行周 4 测试或 20 路 SSE 压测。
+- 用户已确认按 `docs/03-api-contract.md` 实现最小会话支持；阻断解除。后续公开入口固定为 `POST /api/v1/conversations/{conversationId}/messages`，并新增 `POST /api/v1/conversations`，只保存会话与消息元数据、不保存正文。
+- 已确定最小技术路径：Java MVC 使用 Spring `RestClient`/`SseEmitter`，Python 使用 FastAPI `StreamingResponse`；不新增复杂 Agent 框架或 Java 响应式栈。政策引用必须来自 pgvector 中的真实文档记录。
+- Python 周 4 第一版已落地确定性路由、工具客户端、内部 SSE、Request ID/上下文校验和断连停止测试；首次聚焦测试因依赖分组改变触发锁文件刷新并在受限网络下访问 PyPI 失败，尚未得到测试结果，下一步改用现有缓存离线更新锁文件。
+- 已用现有缓存完成 `uv lock --offline`；聚焦测试实际执行为 7/9，通过失败定位到内部 `_event` 参数名与服务卡片的 `name` 字段冲突，已作单行根因修复，等待复跑。
+- Python 聚焦测试修复后为 9/9 通过。Java 已新增 V3 会话/消息元数据迁移、JPA 会话服务、JWT 公开 SSE 控制器、Spring MVC 可取消上游代理和相关测试。
+- Java 首次 `--offline` 编译在读取项目模型时失败：Spring Boot parent 虽在本地缓存，但来源仓库 ID 在当前离线上下文不可用；尚未进入源码编译。下一步沿用仓库内 Maven 镜像设置运行在线编译。
+- 使用仓库内 `docker-maven-settings.xml` 与 Java 17 完成编译：39 个主源码文件编译成功。取消传播单测 `PythonAgentClientTest` 1/1 通过，验证 Java 取消状态会关闭 Python 响应体。
+- Python 全量回归 44/44 通过，`docker compose config --quiet` 通过。首次周 4 评测为 29/30，唯一失败是胰岛素注射剂量未命中医疗守卫；保留原题并补充守卫后等待原样复跑。
+- 原样复跑 21+9 评测为 30/30：Hit@1/Hit@5/MRR 100%，平均 2.78 ms、P95 4.37 ms、索引 139.41 ms，失败项为空；结果已保存到 `data/evaluation/week4_results.json`。这不是模型引用正确率或开放领域指标。
+- Java 17 + PostgreSQL 16.15/Testcontainers 全量测试 9/9 通过；Flyway V3 会话迁移、JWT userId、错误上下文、Request ID、内部 Token/未知价格、消息元数据、Java 关闭 Python 响应体和周 3 预约回归均通过。
+- 增加 Java→Python 请求体/头一致性与上游终止事件解析单测后，`PythonAgentClientTest` 为 2/2；Python 新增模型流关闭断连测试后全量回归为 45/45。`docker compose config --quiet` 与 `git diff --check` 均通过。
+- 首次完整 Compose 构建中，Python 的默认 Linux Torch 解析开始下载数 GB CUDA/NVIDIA 包；已主动中止，未继续制造不符合 CPU-only 决策的镜像。下一步按官方配置固定 Linux CPU wheel 源后重新生成锁文件并构建。
+- uv 锁文件已删除全部 CUDA/NVIDIA/triton 依赖；Python 容器实际安装 `torch 2.14.0+cpu` 并成功构建。随后 Java 镜像的非必要 `dependency:go-offline` 超过 90 秒无输出，已中止并移除该预下载层，改为直接 package。
+- 简化后 Java 镜像 35 秒内打包成功，完整 Compose 已创建；首次状态检查为 PostgreSQL/Python healthy、Nginx up、Java exited(1)，Nginx `/health` 因上游退出返回 502。下一步读取 Java 启动日志定位，尚未声明冒烟通过。
+- Java 日志确认 Flyway V3 已成功迁移，退出根因是 `PythonAgentClient` 有生产与测试两个构造器后 Spring 未能自动选择；已对生产构造器显式标注注入。该问题因集成测试使用 `@MockitoBean` 替换客户端而未在测试上下文暴露，后续增加真实 Bean 启动检查。
+- 修复构造器后四容器均运行，Nginx `/health` 返回 200。首次公开服务型 SSE 真实事件为 `status,status,service_card,status,tool_confirmation,done`，响应头和全部事件 Request ID 一致；但 `displayPrice` 被 Java 序列化为数字，不符合契约字符串，已在 Java DTO 根因处改为两位小数字符串并增加测试。
+
+## 2026-09-06 周 4 完成
+
+- 修改范围：Python 新增 `agent.py` 并扩展 `app.py`、`db.py`、`rag_cli.py`；Java 新增 conversation 控制器/服务/代理、实体、Repository 和 Flyway V3，复用并收紧服务/草案 DTO；新增 Python 根镜像、`.dockerignore`、Nginx 配置并扩展 Compose；新增周 4 Python/Java 测试和 21+9 评测文件；更新 README、入口与四份过程文档、依赖及锁文件。
+- `UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline pytest -q`：46 passed，0 failed；保留 1 条 Starlette/AnyIO 上游弃用警告。
+- `JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home ./mvnw -s docker-maven-settings.xml test`：10 tests，0 failures/errors/skips；Testcontainers PostgreSQL 16.15 完成 Flyway V1–V3。
+- `UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline python -m care_agent_ai.week1_evaluation --questions data/evaluation/week4_questions.jsonl --output data/evaluation/week4_results.json`：21 库内 + 9 库外共 30/30，Hit@1/Hit@5/MRR 100%，索引 140.49 ms、平均 2.78 ms、P95 4.40 ms，失败项为空。
+- `docker compose config --quiet` 通过；完整镜像构建和四服务启动成功，Python 使用 `torch 2.14.0+cpu`，Nginx `/health` 为 200，`/internal/v1/agent/runs` 为 404。
+- 真实 Nginx SSE 冒烟：JWT 登录 → 创建会话 → Java 代理 Python → Python 调用 Java 服务查询/草案工具；事件为 `status,status,service_card,status,tool_confirmation,done`，响应与事件 Request ID 全部一致，草案为真实 Java `PENDING` 数据且 `displayPrice` 为 `"80.00"`。
+- 同一次真实请求在 Python 与 Java 容器日志中均可按同一 `request_id` 检索，并包含用户、会话、阶段、耗时、状态和安全化错误码字段；未输出 Token。
+- 实际失败与修复均已保留在 `task_plan.md`：包括依赖锁网络、事件参数重名、胰岛素题医疗分类、Linux CUDA 镜像、Java 镜像预下载、Spring 构造器选择和价格 JSON 类型。本轮另有两次 Maven settings 相对路径写错，均在测试执行前失败，最终使用仓库实际文件重跑通过。
+- 限制：服务型本地冒烟不调用外部模型；模型流和政策引用路径由自动化测试覆盖。未运行计划中的 20 路 SSE 压测，不声明生产并发或开放领域效果。
+- 周 4 已按 `care-agent-weekly-github-publish` 完成发布前审计；本次提交正常推送并核对远端哈希后，唯一下一步是按路线图进入周 5 Vue 页面，不提前实现后续基础设施。

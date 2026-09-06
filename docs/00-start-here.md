@@ -2,7 +2,7 @@
 
 ## 项目状态
 
-截至 2026-09-06，CareAgent 的周 0–3 均已通过验收。周 3 已完成 Spring Security/JWT、JPA/Flyway、服务与时段、预约草案、幂等确认、原子容量扣减、取消回补和管理员知识代理；Java 测试 6/6、Python 回归 34/34，并通过真实 PostgreSQL 与 Compose 健康检查。周 3 已发布到 GitHub `week3` 分支。当前下一步是按路线图进入周 4：固定 SSE 事件协议，串联 Java 登录用户、Python RAG 与预约草案。
+截至 2026-09-06，CareAgent 的周 0–4 均已通过验收。周 4 已完成三类确定性路由、两项受控工具、Java/Python SSE 与断连取消、Request ID 日志、Nginx 无缓冲配置和 21+9 固定评测；Java 测试 10/10、Python 回归 46/46，真实 Compose SSE 冒烟通过。周 4 验收内容位于累计 `week4` 分支；下一步按路线图进入周 5 Vue 页面。
 
 ## 阅读顺序
 
@@ -65,9 +65,9 @@ $care-agent-weekly-github-publish 把当前周 4 阶段提交并推送
 先完整阅读 README.md、AGENTS.md、task_plan.md、findings.md、progress.md
 以及 docs/00-start-here.md 到 docs/09-week0-feasibility.md。
 
-当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 4，
-先固定 /api/v1/agent/runs 的 SSE 事件协议，
-再串联 Java 登录用户、Python RAG 与预约草案。
+当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 5，
+只实现登录、对话、引用、服务卡片、预约确认和我的预约页面，
+不扩展周 4 Agent/SSE 契约与周 3 预约事务。
 不要提前接入 Redis、Kubernetes、OCR 或全文检索。
 
 你拥有当前工作树写入权，可以在既定范围内实现、测试和修复；同一时间另一代理不会写入。

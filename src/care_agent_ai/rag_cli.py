@@ -85,7 +85,7 @@ def parse_policy_markdown(path: Path) -> list[PolicyChunk]:
 
 
 def guardrail_behavior(question: str) -> str | None:
-    if any(marker in question for marker in ("服用", "剂量", "毫克", "用药")):
+    if any(marker in question for marker in ("服用", "剂量", "毫克", "用药", "注射", "胰岛素")):
         return "REFUSE_MEDICAL"
     if "预约" in question and (
         "绕过" in question or "无需确认" in question or "直接替我创建" in question

@@ -4,16 +4,18 @@ CareAgent 是一个面向老人及家属的养老政策问答与上门服务预�
 
 ## 当前状态
 
-周 0 可行性闸门、周 1 最小 CLI 基线、周 2 FastAPI 导入链路和周 3 Java 主业务均已实现。当前实现：
+周 0 可行性闸门、周 1 最小 CLI、周 2 FastAPI 导入、周 3 Java 主业务和周 4 Agent/SSE 均已实现。当前实现：
 
 - 读取一份人工核对 Markdown 政策知识包，本地 BGE 检索，DeepSeek 带可定位引用回答。
-- FastAPI 内部接口：`X-Internal-Token` 认证的上传、状态查询与问答封装。
-- Compose 启动 PostgreSQL/pgvector 与 Spring Boot；Python FastAPI 仍可单独启动。
+- FastAPI 内部接口：`X-Internal-Token` 认证的上传、状态查询、问答封装与 `/internal/v1/agent/runs` SSE。
+- Agent 按当前问题确定性路由到政策、服务或混合流程；只开放 `search_services` 与 `prepare_appointment` 两个工具。
+- Java 从 JWT 构造用户身份，经会话归属校验后统一代理公开 SSE；模型和 Python 只能准备草案，不能创建最终预约。
+- Compose 启动 PostgreSQL/pgvector、Python、Spring Boot 与 Nginx；Nginx 的 SSE 路径关闭缓冲并使用 300 秒超时，内部接口不对外暴露。
 - Markdown / 文本 PDF 上传（10 MB + magic bytes 校验）切片、Embedding 并写入 pgvector。
 - Spring Security + 短期 JWT、登录限流、JPA/Flyway、服务时段查询、预约草案、幂等确认、原子容量扣减、我的预约、取消回补与关键审计。
 - Java 管理员上传/状态接口只做代理，文件内容校验、解析和向量写入仍由 Python 负责。
 
-评测已扩展为 14 道知识库内、6 道知识库外，20/20 行为正确，Hit@5 100%。Java 测试包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。Vue 尚未接入。详情见 [周 0 可行性记录](docs/09-week0-feasibility.md)、[周 1 评测结果](data/evaluation/week1_results.json) 和 [周 2 评测结果](data/evaluation/week2_results.json)。
+固定评测已扩展为 21 道知识库内、9 道知识库外，30/30 行为正确，Hit@1、Hit@5、MRR 均为 100%；这只代表当前 7 个固定切片和题集，不代表开放领域或模型引用正确率。Python 回归为 46/46，Java 回归为 10/10。周 3 的 Java 测试仍包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。计划中的 20 路 SSE 测试属于周 6，本周未运行。Vue 尚未接入。详情见 [周 4 评测结果](data/evaluation/week4_results.json)。
 
 ## 周 1 CLI
 
@@ -102,6 +104,36 @@ Java 镜像构建使用仓库内 `java-service/docker-maven-settings.xml`，仅�
 ```bash
 cd java-service
 JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home ./mvnw test
+```
+
+## 周 4 Agent 与 SSE
+
+从项目根目录启动完整本地链路：
+
+```bash
+docker compose up -d --build
+```
+
+浏览器只访问 Nginx 的 `8088` 端口。登录后先创建会话，再用同一 JWT 调用 SSE：
+
+```bash
+curl -X POST http://127.0.0.1:8088/api/v1/conversations \
+  -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" -d '{}'
+
+curl -N -X POST http://127.0.0.1:8088/api/v1/conversations/<conversationId>/messages \
+  -H "Authorization: Bearer $ACCESS_TOKEN" -H "Content-Type: application/json" \
+  -H "X-Request-ID: <uuid>" \
+  -d '{"message":"我想预约武侯区助洁服务","context":[]}'
+```
+
+事件类型严格限定为 `status`、`token`、`citation`、`service_card`、`tool_confirmation`、`done`、`error`。上下文只能为空，或只含上一组 `user`、`assistant`；它始终按不可信文本处理。
+
+周 4 离线评测（21 库内 + 9 库外）：
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run python -m care_agent_ai.week1_evaluation \
+  --questions data/evaluation/week4_questions.jsonl \
+  --output data/evaluation/week4_results.json
 ```
 
 ## MVP 唯一路径

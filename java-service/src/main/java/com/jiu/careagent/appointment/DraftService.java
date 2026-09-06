@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -50,11 +49,11 @@ public class DraftService {
         AppointmentDraft draft = drafts.save(new AppointmentDraft(userId, serviceId, slotId, Instant.now().plusSeconds(600)));
         return new DraftResponse(draft.getId(), new DraftServiceView(service.getName()),
                 new DraftSlotView(ServiceCatalogService.atShanghai(slot.getStartAt()), ServiceCatalogService.atShanghai(slot.getEndAt())),
-                service.getPrice(), ServiceCatalogService.atShanghai(draft.getExpiresAt()));
+                ServiceCatalogService.formatPrice(service.getPrice()), ServiceCatalogService.atShanghai(draft.getExpiresAt()));
     }
 
     public record DraftResponse(UUID draftId, DraftServiceView service, DraftSlotView slot,
-                                BigDecimal displayPrice, OffsetDateTime expiresAt) {
+                                String displayPrice, OffsetDateTime expiresAt) {
     }
 
     public record DraftServiceView(String name) {

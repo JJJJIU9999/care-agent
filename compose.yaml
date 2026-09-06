@@ -1,5 +1,4 @@
-# CareAgent 周 3：PostgreSQL/pgvector + Java 主业务服务。
-# FastAPI 仍按周 2 的本机命令启动；Nginx 与 Vue 在后续周次加入。
+# CareAgent 周 4：PostgreSQL/pgvector + Java + FastAPI + Nginx SSE。
 #
 # POSTGRES_PASSWORD 是仅用于本机演示的容器口令，可用环境变量覆盖，禁止在生产复用。
 services:
@@ -31,12 +30,48 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-careagent_local_dev}
       JWT_SECRET: ${JWT_SECRET:-careagent-local-jwt-secret-change-me-2026}
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:-careagent-local-internal-token}
-      PYTHON_BASE_URL: ${PYTHON_BASE_URL:-http://host.docker.internal:8010}
+      PYTHON_BASE_URL: http://python-service:8010
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
+      python-service:
+        condition: service_healthy
+
+  python-service:
+    build:
+      context: .
+    container_name: careagent-python
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-careagent-local-internal-token}
+      RAG_DATABASE_URL: postgresql://careagent:${POSTGRES_PASSWORD:-careagent_local_dev}@postgres:5432/careagent
+      JAVA_BASE_URL: http://java-service:8080
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      CHAT_MODEL: ${CHAT_MODEL:-}
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    volumes:
+      - ./.model-cache:/app/.model-cache:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.29-alpine
+    container_name: careagent-nginx
+    ports:
+      - "8088:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - java-service
 
 volumes:
   pgdata:
