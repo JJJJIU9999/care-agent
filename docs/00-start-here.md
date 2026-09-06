@@ -2,7 +2,7 @@
 
 ## 项目状态
 
-截至 2026-09-06，CareAgent 的周 0–5 均已通过验收。周 5 已用 Vue 3 + TypeScript + Vite + Element Plus 实现登录、聊天工作台、引用侧栏、服务卡片、草案确认、我的预约/取消与管理员上传页，并通过 Compose/Nginx 接入 Vue 构建产物；唯一路径端到端冒烟通过。下一步按路线图进入周 6（证据收口与演示）。
+截至 2026-09-06，CareAgent 的周 0–5 均已通过验收。周 6 证据收口已完成实现与本地验证：50 题评测（35 库内 + 15 库外）、4 例提示注入自检、20 路 SSE 与断连取消测试、100 请求竞争容量 10 防超卖收口、三类查询 EXPLAIN ANALYZE、四服务 Compose 健康检查、GitHub Actions CI 最小门禁与 3 分 25 秒演示视频；待按 `$care-agent-weekly-github-publish` 发布 `week6` 分支。
 
 ## 阅读顺序
 
@@ -18,6 +18,7 @@
 10. `docs/07-roadmap-and-handoff.md`
 11. `docs/08-agent-collaboration.md`
 12. `docs/09-week0-feasibility.md`
+13. `docs/10-demo-video.md`
 
 ## 共享写入权切换 Skill
 

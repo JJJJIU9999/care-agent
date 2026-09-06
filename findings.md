@@ -195,3 +195,21 @@
 - 政策引用路径复用周 4 pgvector 检索：实测政策问题返回流式答案与 5 条 citation（含 documentId/标题/机构/章节/页码/原文），前端侧栏与内联引用均可渲染；`confirmedPrice` 在预约视图为 JSON 数字，前端统一格式化展示。
 - 受限环境事实：全局 npm 缓存目录含 root 文件导致 EPERM，改用临时缓存目录安装；Docker BuildKit 活动目录不可写，构建 `web` 镜像用 `DOCKER_BUILDKIT=0` 经典构建器绕过（产物一致）。
 - 未进入周 5 的实现：Redis、Kubernetes、OCR、全文检索、复杂 Agent 框架、长期记忆；20 路 SSE 压测与演示视频属周 6。
+
+## 2026-09-06 周 6 切片 1：35+15 评测结果
+
+- 周 6 评测集为 `data/evaluation/week6_questions.jsonl`：35 道库内 + 15 道库外；前 30 题与周 4 文件逐字节一致（`cmp` 校验），新增 14 库内 + 6 库外未触碰旧题。
+- 真实运行结果（`data/evaluation/week6_results.json`）：50/50 行为正确，Hit@1 = Hit@5 = MRR = 100%，35 道库内 goldRank 全部为 1；索引 140.9 ms、平均 2.65 ms、P95 3.97 ms；failureReasons 为空，本轮没有需要保留的真实失败分类。
+- 新库外拒答由三类既有守卫确定性覆盖：4 道外地市名（深圳/杭州/武汉/重庆）→ `REFUSE`，1 道含“服用/毫克”→ `REFUSE_MEDICAL`，1 道含“预约+直接替我创建”→ `REFUSE_UNCONFIRMED_BOOKING`；与周 4 结论一致，该评测仍是固定 7 切片上的检索 + 行为守卫口径，不含模型生成质量。
+- 周 6 期间 `week5` 分支保持不新增提交：开发与未提交变更留在 `week5` 工作树上，发布时由 `$care-agent-weekly-github-publish` 从 week5 累计创建 `week6` 分支，避免本地 `week5` 领先 `origin/week5` 破坏发布校验。
+
+## 2026-09-06 周 6 实现结论（切片 2–7）
+
+- 注入自检口径：`prompt_injection_check.py` 用录制式假运行时验证**结构性**防线（路由/工具触发只看用户当前问题；文档与模型输出不能触发工具；事件流与模型输入不含内部 Token canary），4/4 通过、三类违规计数为 0；真实模型在自然语言层面被说服的概率不在自动化统计口径内，由系统提示 + Java 参数重校验 + 最终确认事务兜底。
+- 20 路 SSE（本机 Docker Desktop，12 服务型 + 8 政策型真实模型流）：建立 20/20、完成 14、失败 0、超时 0、主动断连 6；断连请求 Java 全部 `status=CANCELLED`，政策流中断的 2 条 Python `status=cancelled`（该日志在 finally 关闭模型流后输出，即供应商上游已停止）；另 4 条服务型在 68–148 ms 已自然完成后才断连。无供应商限流错误，本轮无需区分供应商/系统错误码（errorCodes 空）。观察 P2：客户端断连瞬间 Java `ApiErrorHandler` 会多打一条 `Unhandled request failure` ERROR（Servlet 异步写失败），不影响取消语义与结构化终止日志。
+- 并发防超卖收口：重跑 `mvnw test` 10/10，`oneHundredConcurrentConfirmationsCannotOversellCapacityTen`（20 线程池竞争容量 10）成功严格 10、余量 0、预约行 10。
+- SQL 证据（PostgreSQL 16.15，本机容器）：以 `pg_dump` 克隆一次性 `perf_lab` schema 灌 200k 时段/100k 预约虚构数据，用“事务内 DROP 索引 → EXPLAIN (ANALYZE, BUFFERS) → ROLLBACK”做前后对比，取证后已删实验 schema。幂等查询 UNIQUE(user_id,idempotency_key) 0.019 ms vs 无索引 4.78 ms（≈250×）；我的预约 3.43 vs 17.46 ms（≈5.1×）；服务时段 5.92 vs 9.85 ms（≈1.7×）。结论：周 3/4 已锁定的索引设计在合成规模下有效，周 6 不改任何迁移。
+- Compose：4 服务全部 healthcheck，依赖链 postgres→python→java→web 逐级 `service_healthy` gated；java 镜像（eclipse-temurin:17-jre）自带 wget 可用于健康探测。CI 落 `.github/workflows/ci.yml` 四作业（Python/Java/Web/镜像构建），真实 MaaS 不进 CI，Compose 冒烟按砍项第 10 条保留本地。
+- 架构文档两处与实现不符已按“文档以已验收实现为准”修正：日志字段 `provider_duration_ms` 从未实现（周 4 验收面里没有），周 6 不为凑文档去改已验收日志代码；`perf_lab`/资源配额同理不写未实测承诺。
+- 录制式演示依赖链事实：Playwright `press_sequentially` 只存在于 Locator；CDP 逐键注入在 Element Plus `el-input` 上会双写字符（值变 `demo_userdemo_user`），改用逐字 `el.value=` + `input` 事件模拟打字；`add_init_script` 以 `(` 开头的表达式形式不会被执行，且 `id='__cap'` 的元素会成为 `window.__cap` 命名属性遮蔽同名函数（HTML 命名访问规则），必须避免 DOM id 与全局名冲突；固定字幕条需 `pointer-events:none` 否则拦截底部按钮。
+- 演示视频：`demo/careagent-week6-demo.webm`，1440×900 VP8，EBML 实测 194.7 s（3 分 25 秒）；镜头 ①登录 ②政策问答带引用 ②c 多轮上下文 ②b 库外拒答 ③服务卡片+草案 ④确认下单 ⑤取消回补 ⑥证据摘要页，覆盖 `docs/06` 全部要求镜头；评测报告口径声明（50 题为作者构造、与语料强相关、不代表开放领域）已写入 README、证据文件与摘要页。

@@ -4,7 +4,7 @@ CareAgent 是一个面向老人及家属的养老政策问答与上门服务预�
 
 ## 当前状态
 
-周 0 可行性闸门、周 1 最小 CLI、周 2 FastAPI 导入、周 3 Java 主业务和周 4 Agent/SSE 均已实现。当前实现：
+周 0 可行性闸门至周 5 Vue 核心界面均已实现并通过验收，周 6 证据收口进行中。当前实现：
 
 - 读取一份人工核对 Markdown 政策知识包，本地 BGE 检索，DeepSeek 带可定位引用回答。
 - FastAPI 内部接口：`X-Internal-Token` 认证的上传、状态查询、问答封装与 `/internal/v1/agent/runs` SSE。
@@ -15,7 +15,7 @@ CareAgent 是一个面向老人及家属的养老政策问答与上门服务预�
 - Spring Security + 短期 JWT、登录限流、JPA/Flyway、服务时段查询、预约草案、幂等确认、原子容量扣减、我的预约、取消回补与关键审计。
 - Java 管理员上传/状态接口只做代理，文件内容校验、解析和向量写入仍由 Python 负责。
 
-固定评测已扩展为 21 道知识库内、9 道知识库外，30/30 行为正确，Hit@1、Hit@5、MRR 均为 100%；这只代表当前 7 个固定切片和题集，不代表开放领域或模型引用正确率。Python 回归为 46/46，Java 回归为 10/10。周 3 的 Java 测试仍包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。计划中的 20 路 SSE 测试属于周 6，本周未运行。Vue 前端已于周 5 接入并验证。详情见 [周 4 评测结果](data/evaluation/week4_results.json)。
+固定评测已扩展为 35 道知识库内、15 道知识库外，50/50 行为正确，Hit@1、Hit@5、MRR 均为 100%；这只代表当前 7 个固定切片和题集，不代表开放领域或模型引用正确率。Python 回归为 53/53（含 4 例提示注入自检场景与配套断言），Java 回归为 10/10（含 100 个请求竞争容量 10 的并发防超卖用例）。20 路 SSE 与断连测试：建立 20/20、完成 14、失败 0、超时 0、主动断连 6，断连请求均可按 Request ID 在 Java/Python 日志核对取消。三类查询的 `EXPLAIN ANALYZE` 证据见 [SQL 执行计划报告](data/evaluation/week6_sql_explain.md)。详情见 [周 6 评测结果](data/evaluation/week6_results.json)。
 
 ## 周 1 CLI
 
@@ -161,6 +161,35 @@ npm run typecheck   # vue-tsc 类型检查
 npm run build       # 产出 web/dist
 ```
 
+## 周 6 证据收口
+
+50 题评测（35 库内 + 15 库外）：
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline python -m care_agent_ai.week1_evaluation \
+  --questions data/evaluation/week6_questions.jsonl \
+  --output data/evaluation/week6_results.json
+```
+
+提示注入自检（2 文档注入 + 2 用户注入，独立统计越权工具调用/内部信息泄露/未确认下单；真实题集另见 `tests/test_week6_prompt_injection.py`）：
+
+```bash
+uv run --offline python -m care_agent_ai.prompt_injection_check
+```
+
+20 路 SSE 与断连测试（先 `docker compose up -d --build` 启动完整栈，并在环境加载 `.env`；结果与取消日志核对写入 `data/evaluation/week6_sse_results.json`）：
+
+```bash
+uv run --offline python scripts/week6_sse_load.py --connections 20 --policy 8
+```
+
+并发竞争与防超卖、SQL 执行计划与 CI：
+
+- 100 个请求竞争容量 10 的用例为 `java-service` 的 `Week3IntegrationTest.oneHundredConcurrentConfirmationsCannotOversellCapacityTen`（`cd java-service && JAVA_HOME=…/temurin-17.jdk/Contents/Home ./mvnw -s docker-maven-settings.xml test`）。
+- 服务时段查询、我的预约、幂等查询的 `EXPLAIN ANALYZE`（含 200k 时段/100k 预约合成量级与前后差异）见 `data/evaluation/week6_sql_explain.md`。
+- `.github/workflows/ci.yml` 固定最小门禁：Python 单测、Java 单元 + Testcontainers 集成、Vue 类型检查与构建、三镜像构建；真实 MaaS 调用不进入 CI，Compose 端到端冒烟按砍项顺序保留本地验证。
+- 3–5 分钟演示视频脚本与录制见 `docs/10-demo-video.md`。
+
 ## MVP 唯一路径
 
 ```text
@@ -179,6 +208,7 @@ npm run build       # 产出 web/dist
 - [测试与评测计划](docs/06-test-and-evaluation.md)
 - [周计划、砍项与交接](docs/07-roadmap-and-handoff.md)
 - [Codex 与 DeepSeek Harness 协作规则](docs/08-agent-collaboration.md)
+- [周 6 演示视频](docs/10-demo-video.md)
 
 ## 技术参考
 

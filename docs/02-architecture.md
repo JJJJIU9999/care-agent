@@ -133,7 +133,7 @@ Request ID：
 - Java 接收合法 UUID，否则生成新 UUID。
 - Java 将规范化 ID 写入请求体和 `X-Request-ID`。
 - Python调用 Java 工具时继续携带相同 ID。
-- 结构化日志至少包含 `request_id`、`user_id`、`conversation_id`、`stage`、`duration_ms`、`provider_duration_ms`、`status` 和 `error_code`。
+- 结构化日志至少包含 `request_id`、`user_id`、`conversation_id`、`stage`、`duration_ms`、`status` 和 `error_code`；供应商耗时不单列字段，政策流场景由 `stage=stream` 的 `duration_ms` 覆盖（周 6 决定：不改周 4 已验收日志面，见 `progress.md`）。
 
 ## Compose 增量
 
@@ -141,4 +141,4 @@ Request ID：
 - 周 3：加入 Spring Boot；Flyway 管理 `app` schema。
 - 周 4：加入 FastAPI、内部网络和 Nginx SSE 配置。
 - 周 5：加入 Vue 构建产物。
-- 周 6：补健康检查、启动顺序、资源配置和冒烟测试。
+- 周 6：补四服务健康检查、逐级 gated 启动顺序与 CI（三端测试 + 镜像构建）；单容器资源限制保持 Docker 默认，不写未实测的拍脑袋配额。Compose 端到端冒烟按固定砍项顺序第 10 条保留本地验证。

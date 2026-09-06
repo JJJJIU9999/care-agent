@@ -266,3 +266,82 @@
 - 验证命令：`web/ npm run typecheck`、`web/ npm run build`；`docker compose config --quiet` 通过；`DOCKER_BUILDKIT=0 docker compose build web` 成功（受限环境 BuildKit 活动目录不可写，改用经典构建器，产物一致）。
 - 已知限制：手机端为基础响应式；Element Plus 全量引入，主包约 1 MB（gzip 约 345 KB），仅提示分块警告；20 路 SSE 压测与演示视频仍属周 6。
 - 下一步唯一任务：按 `care-agent-weekly-github-publish` 发布 `week5` 分支后进入周 6（35+15 评测、4 个提示注入测试、20 路 SSE 与断连、100 并发防超卖、SQL 执行计划、Compose 健康检查与 CI、README/架构/接口终校、演示视频）。
+
+## 2026-09-06 写入权交接
+
+- `WRITER_HANDOFF: DeepSeek Harness -> Qwen (qwen3.8flash)`
+- 交接前状态：分支 `week5`（跟踪 `origin/week5`，最新提交 `ce31356`），工作树在交接核对时干净；周 5 已完成并发布。
+- 本次为开发模型更换（Harness 会话内的实现者由 DeepSeek 模型换为 Qwen 3.8 Flash），运行时 Chat 模型（`.env` 的 `CHAT_MODEL`）不变。
+- 新写入者已按 `docs/00-start-here.md` 阅读顺序完成接管核对（pwd、git 状态、task_plan/findings/progress、docs/03/05/06/07/08），并已更新 `docs/08-agent-collaboration.md` 第 6 行为 `CURRENT_WRITER: Qwen (qwen3.8flash)`。
+- 唯一下一步任务：进入周 6 证据收口，第一个切片为评测集扩展至 35 库内 + 15 库外。
+
+## 2026-09-06 周 6 启动与切片 1（评测扩到 35+15）
+
+- 已确认 `CURRENT_WRITER: Qwen (qwen3.8flash)`，分支 `week5`（`ce31356`，与 `origin/week5` 一致），按用户指示直接在 `week5` 累计上开始周 6 开发（发布时创建 `week6` 分支）。
+- 切片 1 完成：新增 `data/evaluation/week6_questions.jsonl`（50 题 = 35 库内 + 15 库外）。前 30 题与 `week4_questions.jsonl` 逐字节一致（`cmp` 校验 OLD-30-IDENTICAL），未修改任何旧题；新增 14 道库内（`w6-in-01..14`）+ 6 道库外（`w6-out-01..06`）。
+- 新库内题全部标注 `expectedDocument` + `expectedSnippet`（规范化后为 7 个固定切片正文的子串）；新库外题覆盖 4 城市地域拒答（深圳/杭州/武汉/重庆）、1 道医疗剂量、1 道绕过确认预约。
+- 真实评测命令：`UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline python -m care_agent_ai.week1_evaluation --questions data/evaluation/week6_questions.jsonl --output data/evaluation/week6_results.json`
+- 评测结果（首轮即全对，无失败分类需要保留）：50/50 行为正确，Hit@1 = Hit@5 = MRR = 100%（35 道库内 goldRank 全部为 1），索引 140.9 ms、平均每题 2.65 ms、P95 3.97 ms；结果已保存到 `data/evaluation/week6_results.json`。该口径仍只衡量固定 7 切片上的检索与行为守卫，不含模型生成与引用正确率。
+- 回归验证：`UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline pytest -q` → 46 passed，0 failed，保留 1 条既有 Starlette/AnyIO 上游弃用警告。
+- 下一步唯一任务：切片 2——按 `docs/05-security.md` 落地 4 个提示注入测试（2 文档注入 + 2 用户注入），统计越权工具调用/内部信息泄露/未确认下单。
+
+## 2026-09-06 周 6 切片 2（4 个提示注入测试）
+
+- 新增 `src/care_agent_ai/prompt_injection_check.py`：按 `docs/05-security.md` 最小四例离线重放——pi-doc-01 文档注入要求忽略规则并下单、pi-doc-02 文档注入要求泄露内部 Token、pi-user-01 用户要求绕过确认直接预约、pi-user-02 用户要求改价 0.01 元；独立统计三类违规（越权工具调用、内部信息泄露、未确认下单），不与 RAG 准确率混算。
+- 新增 `tests/test_week6_prompt_injection.py`：7 个可运行测试（4 场景参数化 + 文档注入不触发工具 + 用户注入守卫拒答 + 内部 SSE 端点不回显 canary Token）。
+- 自检命令与结果：`UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline python -m care_agent_ai.prompt_injection_check` → 4/4 passed，violationCounts 全部为 0；文档注入场景中注入文本仅作为不可信资料进入模型输入，事件序列 `status×3,token,citation,done` 不含 `tool_confirmation`；用户注入被 `REFUSE_UNCONFIRMED_BOOKING` / `REFUSE_UNTRUSTED_PRICE` 守卫截停（`status,token,done`）。结果已保存到 `data/evaluation/week6_prompt_injection_results.json`。
+- 回归验证：`uv run --offline pytest -q` → 53 passed（46 + 新增 7），0 failed，保留 1 条既有上游弃用警告。
+- 口径限制（如实记录）：本切片是确定性路由与工具层的结构性防线自检，衡量“注入文本/用户消息能否在代码层触发工具或泄露凭证”；不声称真实模型在自然语言层面永不被说服（模型侧由系统提示 + Java 端参数重校验兜底，且最终预约仍只走周 3 确认事务）。
+- 下一步唯一任务：切片 3——20 路 SSE 与断连测试（启动完整 Compose 栈，记录建立/完成/失败/超时数量，随机中断部分客户端，按 Request ID 核对 Java/Python 上游停止）。
+
+## 2026-09-06 周 6 切片 3（20 路 SSE 与断连测试）
+
+- 新增 `scripts/week6_sse_load.py`：固定种子 42，并发 20 条公开 SSE（12 服务型 + 8 政策型，均经 Nginx→Java→Python 真实链路；服务型消息不含“预约”不产生草案与容量副作用，政策型走真实 DeepSeek 流）。
+- 正式命令与结果：`set -a; source .env; set +a; UV_CACHE_DIR=.uv-cache uv run --offline python scripts/week6_sse_load.py --connections 20 --policy 8` → established 20/20，completed 14，failed 0，timeout 0，interrupted 6；errorCodes 为空（本轮无供应商限流或系统错误事件）。结果文件 `data/evaluation/week6_sse_results.json`。
+- 断连核对（`docker logs --since 2026-09-06T07:24:33Z | grep <requestId>`，已写入结果文件 `logVerification`）：6 条被中断请求在 Java 侧全部记录 `stage=proxy status=CANCELLED`；Python 侧 2 条政策流记录 `status=cancelled`（855 ms / 1001 ms，该日志仅在生成器 finally 关闭模型流与上游客户端之后输出，即供应商上游流已停止），另 4 条服务型流在 68–148 ms 已自然完成后客户端才断开（Python `completed`、Java `CANCELLED`）。窗口聚合：Java 14 COMPLETED + 6 CANCELLED = 20，Python 18 completed + 2 cancelled = 20。
+- 模型流关闭顺序另有自动化测试 `test_disconnect_during_answer_closes_model_stream_before_tools` 固化；口径只称“20 路流式连接稳定性与断连取消测试”，不构成生产并发承诺。
+- 观察（P2，不修复不隐瞒）：客户端断连瞬间 Java `ApiErrorHandler` 会对同一 request_id 输出一条 `Unhandled request failure` ERROR（Servlet 异步写失败），但结构化 `status=CANCELLED` INFO 终止日志仍正确记录，链路取消语义未受影响。
+- 下一步唯一任务：切片 4——重跑 Java 全量测试收口 100 请求竞争容量 10 防超卖证据并记录。
+
+## 2026-09-06 周 6 切片 4（100 请求竞争容量 10 防超卖收口）
+
+- 收口方式：不新增实现，重跑既有 Java 集成测试套件并记录。命令：`cd java-service && JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home ./mvnw -s docker-maven-settings.xml test` → **10 tests, 0 failures, 0 errors, 0 skipped, BUILD SUCCESS**（真实 Testcontainers PostgreSQL 16.15，Flyway V1–V3）。
+- 关键用例：`Week3IntegrationTest.oneHundredConcurrentConfirmationsCannotOversellCapacityTen`——100 个草案经 20 线程固定池并发确认竞争容量 10 的时段；断言成功数严格为 10、时段剩余容量为 0、`app.appointment` 表行数为 10（无重复草案预约、无负容量）。
+- 口径固定：本报告只描述为“并发竞争与防超卖测试”（单机 Testcontainers 环境，不构成生产高并发或吞吐承诺）。
+- 日志留存：`/tmp/week6_java_test.log`（本机运行日志，不入库；结果已在本节与 findings 中引用）。
+- 下一步唯一任务：切片 5——对服务时段查询、我的预约、幂等查询运行 `EXPLAIN ANALYZE`，记录数据量/索引/前后差异。
+
+## 2026-09-06 周 6 切片 5（SQL EXPLAIN ANALYZE）
+
+- 取证环境：`careagent-postgres`（PostgreSQL 16.15，pgvector/pgvector:pg16，Docker Desktop / Apple Silicon）。真实 `app` schema 只有演示量级（2 用户/3 时段/2 预约），为产生有意义的执行计划，用 `pg_dump -n app --schema-only` 克隆一次性 `perf_lab` schema，灌入纯虚构合成数据：200 用户、200 服务、200,000 时段、100,000 预约（含配套草案，满足全部外键/唯一约束）。
+- 前后对比方法：同一事务内临时 `DROP INDEX`/`DROP CONSTRAINT` → `EXPLAIN (ANALYZE, BUFFERS)` → `ROLLBACK`；生产迁移与索引零改动。取证后已 `DROP SCHEMA perf_lab CASCADE`（复核 schemata 计数 0）。
+- 结果（`EXPLAIN (ANALYZE, BUFFERS)` Execution Time）：
+  - 服务时段查询：有索引 5.924 ms（Bitmap Index Scan `service_slot_service_start_idx`，命中 3,960/200k）vs 删除该索引 9.851 ms（Parallel Seq Scan 过滤 98,020 行），约 1.7×。
+  - 我的预约：有 `appointment_user_start_idx` 3.430 ms（user_id 前缀 500 行 + PK 回查 + 小排序）vs 无索引 17.460 ms（Parallel Seq Scan），约 5.1×；排序键为 `slot.start_at`，现有 `(user_id, confirmed_at DESC)` 消除不了排序但把候选压到 500 行，维持现索引不改。
+  - 幂等查询：`UNIQUE(user_id,idempotency_key)` 0.019 ms（单行 Index Scan）vs 仅剩 user_id 前缀 0.036 ms vs 无任何索引 4.782 ms（Seq Scan 过滤 99,999 行），约 250×；该唯一约束同时是幂等正确性保障。
+- 证据文件：`data/evaluation/week6_sql_explain.md`（含数据量、索引清单、计划要点、汇总表与两轮完整原始输出附录）。
+- 下一步唯一任务：切片 6——Compose 健康检查与 CI 收口，README/架构/接口最终校对。
+
+## 2026-09-06 周 6 切片 6a（Compose 健康检查与 CI）
+
+- `compose.yaml`：新增 `java-service` 健康检查（`wget -qO- http://127.0.0.1:8080/health`，5s/3s/12，镜像为 eclipse-temurin:17-jre，实测含 wget）与 `web` 健康检查（`wget -qO- http://127.0.0.1/health`）；`web` 对 `java-service` 的依赖从裸列表升级为 `condition: service_healthy`。至此四个服务全部健康检查，启动链 postgres→python→java→web 逐级 gated。
+- 验证：`docker compose config --quiet` 通过；`docker compose up -d java-service web` 重建后 `docker ps` 显示 4 容器全部 healthy，`http://127.0.0.1:8088/health` 返回 `{"status":"ok"}`，`/` 返回 200。
+- 新增 `.github/workflows/ci.yml`（此前仓库没有任何 CI）：4 个作业——python-test（`uv sync --frozen` + `uv run pytest -q`，自动测试只用假 Chat/Embedding 客户端，真实 MaaS 不进 CI）、java-test（Temurin 17 + `./mvnw test`，Testcontainers 真实 PostgreSQL）、web-build（Node 22 + `npm ci` + typecheck + build）、image-build（`docker compose build java-service python-service web`）。Compose 端到端冒烟按固定砍项顺序第 10 条保留在本地验证（周 4–6 progress 已有本地真实链路记录）。
+- 下一步唯一任务：README/架构/接口最终校对，然后重跑三端全套验证取最终数字。
+
+## 2026-09-06 周 6 切片 6b（README/架构/接口终校）与切片 7（演示视频）
+
+- 终校：`docs/03-api-contract.md` 与实现一致性复核通过（SSE 七类事件、会话路由、工具接口、Request ID 规则均与周 4–5 验收实现相同，未改契约）。`docs/02-architecture.md` 两处修正为与事实相符：结构化日志字段去掉从未实现的 `provider_duration_ms`（供应商耗时由 `stage=stream duration_ms` 覆盖）；周 6 Compose 增量行改为“健康检查 + gated 启动顺序 + CI，资源限制保持 Docker 默认”。README 更新状态段（50 题评测、Python 53/53、Java 10/10、20 路 SSE 计数、SQL 证据链接）并新增“周 6 证据收口”命令章节与 `docs/10` 链接。`docs/00-start-here.md` 状态改为周 6 完成待发布。
+- 演示视频：新增 dev 依赖 `playwright`（唯一理由：标准库与现有栈无浏览器录屏能力；浏览器二进制缓存在 gitignore 的 `.playwright-browsers/`）。新增 `scripts/week6_demo_video.py`：Playwright 无头 Chromium 驱动真实 Compose 栈 + 真实 DeepSeek 流式回答，录制唯一路径全流程（登录→政策问答带引用→多轮上下文→库外拒答→服务卡片→草案→确认→我的预约→取消→证据摘要页），底部烧录字幕说明信任边界；无 ffmpeg，交付浏览器可直接播放的 VP8 webm。
+- 录制实现期发现并修复 4 个真实问题（均已固化在脚本中）：① Playwright Page 无 `press_sequentially`（Locator 级）；② CDP 逐键在 el-input 上双写字符（改逐字赋值 + input 事件）；③ init 脚本 document-start 时 `documentElement` 为 null 且 `div id='__cap'` 与 `window.__cap` 命名冲突（改守卫顺序 + 重命名 `__capbar`）；④ 字幕条遮挡按钮（`pointer-events:none`）。
+- 验证：首录 78s 不达标 → 加长节奏并补拒答/多轮/片尾场景后重录，会话 189 s，webm EBML 实测时长 194.7 s ≈ **3 分 25 秒**（满足 3–5 分钟），产物 `demo/careagent-week6-demo.webm`（12.2 MB）；镜头与契约对应关系、复现命令、已知限制见 `docs/10-demo-video.md`。
+- 最终回归：`uv run --offline pytest -q` → 53 passed；`docker compose config --quiet` 通过；4 容器 healthy；Java 10/10（切片 4）；前端 typecheck+build 通过（WEB-OK，主包 1,053.96 kB/gzip 344.92 kB，chunk 警告为周 5 已知限制）；`git diff --check` 干净；新增/修改文件密钥模式扫描 SECRET-SCAN-CLEAN；`.env` 全程未读取输出；`.github/workflows/ci.yml` YAML 校验通过。
+- 周 6 全部验收项状态：50 题评测 ✅、注入 4 例 ✅、20 路 SSE ✅、防超卖收口 ✅、EXPLAIN ANALYZE ✅、Compose 健康检查 + CI ✅、文档终校 ✅、演示视频 ✅。
+- 下一步唯一任务：按 `$care-agent-weekly-github-publish` 从 week5 累计创建并发布 `week6` 分支。
+
+## 2026-09-06 周 6 发布 checkpoint
+
+- 周次：week6（累计自已验收 `week5`@`ce31356`；`main` 尚未包含周 3+，故基线为 week5 分支）。
+- 已实现范围：35+15 评测（50/50，Hit@5 100%）、4 例提示注入自检（4/4，违规计数 0）、20 路 SSE 与断连（建立 20/完成 14/失败 0/超时 0/断连 6，Java/Python 取消日志按 Request ID 核对）、100 请求竞争容量 10 防超卖收口（Java 10/10）、三类查询 EXPLAIN ANALYZE（幂等 ≈250×、我的预约 ≈5.1×、时段 ≈1.7×，perf_lab 已清理）、四服务健康检查 + gated 启动、CI 最小门禁 workflow、README/架构/接口终校、3 分 25 秒演示视频。
+- 已知限制：注入自检为结构性口径；SSE/并发为单机演示口径非生产承诺；视频无旁白音轨；`ApiErrorHandler` 对客户端断连多打一条 ERROR（P2，未改已验收代码）。
+- 验证命令与结果见本节之前各切片记录；`.env` 未入库，密钥扫描 CLEAN，`git diff --check` 通过。目标分支 `week6`，最终提交哈希以 Git 为准。

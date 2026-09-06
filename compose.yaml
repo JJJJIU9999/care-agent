@@ -33,6 +33,11 @@ services:
       PYTHON_BASE_URL: http://python-service:8010
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,8 +74,14 @@ services:
     container_name: careagent-web
     ports:
       - "8088:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
     depends_on:
-      - java-service
+      java-service:
+        condition: service_healthy
 
 volumes:
   pgdata:

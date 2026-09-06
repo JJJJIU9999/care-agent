@@ -1,0 +1,364 @@
+{
+  "capturedAt": "2026-09-06T07:24:35.704842+00:00",
+  "command": "uv run --offline python scripts/week6_sse_load.py --seed 42",
+  "baseUrl": "http://127.0.0.1:8088",
+  "hardware": "本机 MacBook（Docker Desktop 单容器栈，演示用途）",
+  "config": {
+    "connections": 20,
+    "policyStreams": 8,
+    "serviceStreams": 12,
+    "timeoutSeconds": 90.0,
+    "seed": 42,
+    "interruptService": 4,
+    "interruptPolicy": 2,
+    "interruptedIndices": [
+      0,
+      1,
+      11,
+      12,
+      17,
+      19
+    ]
+  },
+  "summary": {
+    "established": 20,
+    "completed": 14,
+    "failed": 0,
+    "timeout": 0,
+    "interrupted": 6
+  },
+  "interruptedRequestIds": [
+    "9463dea1-67b1-47e1-9148-b0837d03524e",
+    "64708760-a2bb-48ec-821b-362390a832d8",
+    "8e5ddf84-8995-4946-b924-2ea4958793a8",
+    "a87e77cf-37f7-4973-b1db-513e320a5ee4",
+    "9c0c5cdb-aa6a-4cb0-a445-857e4884f6dd",
+    "c00c225c-9f29-4a2d-a09b-f32d7b1ba2d5"
+  ],
+  "errorCodes": [],
+  "failedOrTimeoutByKind": {},
+  "streams": [
+    {
+      "requestId": "9463dea1-67b1-47e1-9148-b0837d03524e",
+      "kind": "policy",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 3
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 242.4
+    },
+    {
+      "requestId": "64708760-a2bb-48ec-821b-362390a832d8",
+      "kind": "policy",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 3
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 281.5
+    },
+    {
+      "requestId": "1a25b8f9-7e66-480d-aa32-f857be375055",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 20,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 1641.8
+    },
+    {
+      "requestId": "34d3b0f4-21e9-4f47-ab84-fa753345530b",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 26,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 1442.4
+    },
+    {
+      "requestId": "396fc034-b92e-44d2-9561-4e5d72920fff",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 22,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 1268.8
+    },
+    {
+      "requestId": "e2cbab4b-d17b-42d5-87a8-2b6945c7e7e5",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 29,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 1624.7
+    },
+    {
+      "requestId": "b3cd9888-3659-452c-833f-deb01cc062b2",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 18,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 1302.8
+    },
+    {
+      "requestId": "c58acd74-3b6b-4e2f-b724-fbc649e5e5e0",
+      "kind": "policy",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 3,
+        "token": 47,
+        "citation": 5,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 2387.2
+    },
+    {
+      "requestId": "d9e9b0fd-2f73-4fe3-a125-772d271c13c3",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 106.4
+    },
+    {
+      "requestId": "263ca305-d0cf-4b58-a9c7-8658333298c1",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 187.3
+    },
+    {
+      "requestId": "ce5254b3-ea80-4787-9bba-f637636ad00b",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 225.9
+    },
+    {
+      "requestId": "8e5ddf84-8995-4946-b924-2ea4958793a8",
+      "kind": "service",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 211.1
+    },
+    {
+      "requestId": "a87e77cf-37f7-4973-b1db-513e320a5ee4",
+      "kind": "service",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 226.0
+    },
+    {
+      "requestId": "ed3ff21c-1b57-4c40-b775-3117682db8a6",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 259.3
+    },
+    {
+      "requestId": "537d2d5c-58c7-43c7-88e0-50a94bdca548",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 259.3
+    },
+    {
+      "requestId": "8eeb9478-efb7-45b7-a84f-73424b0cb3bc",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 119.4
+    },
+    {
+      "requestId": "b573b867-4c78-4438-999a-1208444de73c",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 119.0
+    },
+    {
+      "requestId": "9c0c5cdb-aa6a-4cb0-a445-857e4884f6dd",
+      "kind": "service",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 211.1
+    },
+    {
+      "requestId": "94d0b610-291a-4e4b-89dc-fe5968a10142",
+      "kind": "service",
+      "interruptPlanned": false,
+      "established": true,
+      "result": "completed",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1,
+        "done": 1
+      },
+      "terminalErrorCode": null,
+      "durationMs": 244.5
+    },
+    {
+      "requestId": "c00c225c-9f29-4a2d-a09b-f32d7b1ba2d5",
+      "kind": "service",
+      "interruptPlanned": true,
+      "established": true,
+      "result": "interrupted",
+      "eventCounts": {
+        "status": 2,
+        "service_card": 1
+      },
+      "terminalErrorCode": null,
+      "interruptedAfterEvent": 3,
+      "durationMs": 115.8
+    }
+  ],
+  "logVerification": {
+    "method": "docker logs careagent-java/careagent-python --since 2026-09-06T07:24:33Z | grep <requestId>",
+    "windowJavaTerminal": "14 COMPLETED + 6 CANCELLED = 20",
+    "windowPythonTerminal": "18 completed + 2 cancelled = 20",
+    "perInterruptedRequestId": [
+      {
+        "requestId": "9463dea1-67b1-47e1-9148-b0837d03524e",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "cancelled(855ms,政策流模型中途断开)"
+      },
+      {
+        "requestId": "64708760-a2bb-48ec-821b-362390a832d8",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "cancelled(1001ms,政策流模型中途断开)"
+      },
+      {
+        "requestId": "8e5ddf84-8995-4946-b924-2ea4958793a8",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "completed(148ms,断连时上游已自然结束)"
+      },
+      {
+        "requestId": "a87e77cf-37f7-4973-b1db-513e320a5ee4",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "completed(108ms,断连时上游已自然结束)"
+      },
+      {
+        "requestId": "9c0c5cdb-aa6a-4cb0-a445-857e4884f6dd",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "completed(117ms,断连时上游已自然结束)"
+      },
+      {
+        "requestId": "c00c225c-9f29-4a2d-a09b-f32d7b1ba2d5",
+        "javaStatus": "CANCELLED",
+        "pythonStatus": "completed(68ms,断连时上游已自然结束)"
+      }
+    ],
+    "note": "2 条政策流在模型生成中途被客户端断开：Python 日志 status=cancelled 只在生成器 finally 关闭模型流与客户端后输出，即供应商上游流已停止；另 4 条服务型流在 68-148ms 内已自然完成，Java 记录客户端断连为 CANCELLED。排序结构另有自动化测试 test_disconnect_during_answer_closes_model_stream_before_tools 固化。"
+  }
+}
