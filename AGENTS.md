@@ -13,6 +13,7 @@ These rules apply to every coding agent working in this repository.
 
 - 当前唯一主实现者以 `docs/08-agent-collaboration.md` 中的 `CURRENT_WRITER` 为准；任何代理修改前必须核对该行。
 - 用户要求在 Codex 与 DeepSeek Harness 之间切换写入权时，使用共享 Skill `$care-agent-writer-handoff`；其入口位于 `/Users/jiu/.agents/skills/care-agent-writer-handoff/SKILL.md`。
+- 用户要求把已完成周次提交或推送到 GitHub 时，使用共享 Skill `$care-agent-weekly-github-publish`；其入口位于 `/Users/jiu/.agents/skills/care-agent-weekly-github-publish/SKILL.md`。
 - Only one agent may be the active writer for this repository at a time.
 - A reviewer is read-only unless the user explicitly transfers writer ownership.
 - Never let two agents modify the same working tree concurrently.

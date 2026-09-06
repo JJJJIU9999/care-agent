@@ -2,7 +2,7 @@
 
 ## 项目状态
 
-截至 2026-09-05，CareAgent 的周 0 可行性闸门、周 1 最小 CLI 基线和周 2 FastAPI 与导入链路均已通过。周 2 已用 FastAPI 封装周 1 CLI 能力，Compose 只启动 PostgreSQL/pgvector 并初始化 `rag` schema，实现带 `X-Internal-Token` 的内部上传与状态查询接口（Markdown、文本 PDF、10 MB 与 magic bytes 校验），并把评测集扩展到 14 道库内、6 道库外（20/20 行为正确，Hit@5 100%）。当前下一步是按路线图进入周 3：Spring Security/JWT、JPA/Flyway、服务与时段种子、预约草案与确认事务。
+截至 2026-09-06，CareAgent 的周 0–3 均已通过验收。周 3 已完成 Spring Security/JWT、JPA/Flyway、服务与时段、预约草案、幂等确认、原子容量扣减、取消回补和管理员知识代理；Java 测试 6/6、Python 回归 34/34，并通过真实 PostgreSQL 与 Compose 健康检查。周 3 已发布到 GitHub `week3` 分支。当前下一步是按路线图进入周 4：固定 SSE 事件协议，串联 Java 登录用户、Python RAG 与预约草案。
 
 ## 阅读顺序
 
@@ -36,6 +36,23 @@ $care-agent-writer-handoff 切换到 Codex
 
 该 Skill 会先保存进度、测试结果、未完成事项和唯一下一步，再更新 `docs/08-agent-collaboration.md` 中的 `CURRENT_WRITER`。仅打开项目、额度耗尽或执行只读复核都不会自动转移写入权。
 
+## 共享周分支发布 Skill
+
+Codex 与 DeepSeek Harness 共用：
+
+```text
+/Users/jiu/.agents/skills/care-agent-weekly-github-publish/SKILL.md
+```
+
+已完成一个周次并需要提交、推送到 GitHub 时调用：
+
+```text
+$care-agent-weekly-github-publish 上传周 3 到 GitHub
+$care-agent-weekly-github-publish 把当前周 4 阶段提交并推送
+```
+
+该 Skill 会核对当前唯一写入者、周次验收、分支基线、`.env` 忽略、暂存文件和密钥模式，正常提交并推送后再比对远端提交。它不会自动合并 `main`、强制推送或伪造历史；周 0–2 因建仓较晚，继续保留为 `main` 的联合基线。
+
 ## 给当前主实现者的启动提示词
 
 ```text
@@ -48,10 +65,10 @@ $care-agent-writer-handoff 切换到 Codex
 先完整阅读 README.md、AGENTS.md、task_plan.md、findings.md、progress.md
 以及 docs/00-start-here.md 到 docs/09-week0-feasibility.md。
 
-当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 3，
-先核对本机 Java 17 与 Maven Wrapper 计划，再实现 Spring Security/JWT、JPA/Flyway、
-服务与时段种子、预约草案与确认事务。
-不要提前接入 Vue、Redis、Kubernetes、OCR 或全文检索。
+当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 4，
+先固定 /api/v1/agent/runs 的 SSE 事件协议，
+再串联 Java 登录用户、Python RAG 与预约草案。
+不要提前接入 Redis、Kubernetes、OCR 或全文检索。
 
 你拥有当前工作树写入权，可以在既定范围内实现、测试和修复；同一时间另一代理不会写入。
 开始前检查实际目录和工具版本；完成后更新 progress.md 和 findings.md，
@@ -67,6 +84,7 @@ $care-agent-writer-handoff 切换到 Codex
 - 评审者读取代码、测试和文档，输出按严重程度排序的意见，不直接修改文件。
 - 当前主实现者可以持续完成既定 Roadmap；另一代理只读复核。
 - 如果切换主实现者，必须调用 `$care-agent-writer-handoff`，先停止原实现者并在 `progress.md` 写明交接点。
+- 已完成周次需要发布到 GitHub 时，调用 `$care-agent-weekly-github-publish`；发布本身不改变主实现者。
 - 禁止两个工具同时在同一工作树写代码。
 
 原因不是某个工具只能“思考”或只能“执行”，而是设计决策和代码实现需要由同一个主体闭环验证。把大脑与手脚硬拆开，会造成接口理解漂移、半完成修改和责任不清。

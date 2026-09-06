@@ -25,6 +25,23 @@ $care-agent-writer-handoff 切换到 Codex
 
 Skill 要求交出方先停止新增修改，运行与当前切片直接相关的验证，在 `progress.md` 记录完成内容、文件、测试、失败项和唯一下一步，最后才更新 `CURRENT_WRITER`。交接完成后，原写入者立即转为只读。
 
+## 共享周分支发布 Skill
+
+Codex 与 DeepSeek Harness 都从以下共享位置发现 GitHub 周分支发布流程：
+
+```text
+/Users/jiu/.agents/skills/care-agent-weekly-github-publish/SKILL.md
+```
+
+调用示例：
+
+```text
+$care-agent-weekly-github-publish 上传周 3 到 GitHub
+$care-agent-weekly-github-publish 把当前周 4 阶段提交并推送
+```
+
+只有顶部 `CURRENT_WRITER` 指定的代理可以执行发布。Skill 会验证周次验收、真实分支基线、测试证据、`.env` 忽略、暂存内容、密钥模式和远端提交；不自动合并、强推、删除分支或转移写入权。周 0–2 没有独立 Git 快照，保持为 `main` 联合基线，不创建误导性的历史分支。
+
 ## 结论
 
 Codex 和 DeepSeek Harness 可以随额度与任务阶段轮换主实现权。工具角色不代表能力高低；关键约束仍是同一时间只有一个主体写当前工作树，主实现者必须同时负责实现、验证和进度记录。
@@ -108,6 +125,7 @@ find . -maxdepth 1 -type f -print
 当前 WRITER 完成一个最小切片
   → 运行测试并更新 progress.md / findings.md
   → 用户可继续使用当前 WRITER，或调用切换 Skill
+  → 周次完成后可调用 GitHub 发布 Skill
   → 接收方复核交接点与实际文件后继续
 ```
 

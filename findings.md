@@ -152,3 +152,10 @@
 - 真实本地 HTTP 冒烟已验证登录、服务与时段、草案、首次确认 201、同键重放 200、未知价格字段 400、取消两次只回补一次，以及三类审计记录。
 - 最终 Java 测试为 6/6（含管理员 RBAC、JWT、请求 ID、限流、幂等、取消和并发）；Python 回归为 34/34，均无失败。
 - Java 多阶段镜像构建成功；Compose 中 PostgreSQL 为 healthy，Java `/health` 返回 `{"status":"ok"}`。验证后停止 Java 容器释放 8080，保留此前已运行的 PostgreSQL。
+
+## 2026-09-06 GitHub 周分支发布 Skill
+
+- Codex 与 DeepSeek Harness 共同发现用户级 `/Users/jiu/.agents/skills`；周分支发布 Skill 固定安装为 `care-agent-weekly-github-publish/SKILL.md`。
+- 发布操作继续受 `CURRENT_WRITER` 约束；发布完成周次不会自动转移写入权，也不会隐式合并 `main`。
+- 周分支采用累计检查点：新周必须包含前一已验收周；若 `main` 尚未包含前一周，则从前一周分支创建，不从旧 `main` 制造缺失代码的平行分支。
+- Git 在周 2 完成后才初始化，因此周 0–2 没有独立精确快照；Skill 明确禁止创建内容相同或近似重建的误导分支。

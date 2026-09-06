@@ -191,3 +191,11 @@
 - Java 多阶段镜像构建成功；Compose 启动后 PostgreSQL healthy，Java `/health` 返回 `{"status":"ok"}`。验证后已停止 Java 容器释放 8080，保留原本运行的 PostgreSQL。
 - 当前分支为 `week3`；周 3 验收内容按同名分支独立提交与推送，具体提交以 Git 历史为准。用户真实 `.env` 未被修改或输出，手动启动前仍需按 `.env.example` 补充相同的 `INTERNAL_TOKEN`、`JWT_SECRET` 和数据库配置。
 - 下一步唯一任务：进入周 4，先固定 `/api/v1/agent/runs` 的 SSE 事件协议，再把 Java 的认证用户与 Python RAG/预约草案串成一条可中断、可确认的 Agent 流程。
+
+## 2026-09-06 GitHub 周分支发布 Skill
+
+- 新建双方共享的 `/Users/jiu/.agents/skills/care-agent-weekly-github-publish/SKILL.md`，用于用户要求提交、推送或发布一个已完成 CareAgent 周次时执行安全流程。
+- Skill 固定检查：当前唯一写入者、绝对项目路径、周次验收、累计分支基线、相关测试、`git diff --check`、`.env` 忽略、暂存文件与密钥模式、远端分支和最终提交哈希。
+- Skill 明确禁止隐式合并、强推、重写历史、删除分支和伪造周 0–2 历史；GitHub 发布不会改变 `CURRENT_WRITER`。
+- 已在 `AGENTS.md`、`docs/00-start-here.md` 和 `docs/08-agent-collaboration.md` 登记路径与调用示例，Harness 从项目入口即可发现。
+- 格式验证：`quick_validate.py` 返回 `Skill is valid!`；共享安装文件与三处入口引用一致，本记录随当前 `week3` 分支提交并推送。
