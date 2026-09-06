@@ -3,7 +3,7 @@
 ## 当前写入权
 
 ```text
-CURRENT_WRITER: DeepSeek Harness
+CURRENT_WRITER: Codex
 ```
 
 该行是当前写入权的唯一状态源。未被列出的代理一律只读；创建 Skill、打开项目、额度耗尽或发起只读复核均不自动改变它。

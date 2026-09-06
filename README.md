@@ -4,14 +4,16 @@ CareAgent 是一个面向老人及家属的养老政策问答与上门服务预�
 
 ## 当前状态
 
-周 0 可行性闸门、周 1 最小 CLI 基线和周 2 FastAPI 与导入链路均已通过。当前实现：
+周 0 可行性闸门、周 1 最小 CLI 基线、周 2 FastAPI 导入链路和周 3 Java 主业务均已实现。当前实现：
 
 - 读取一份人工核对 Markdown 政策知识包，本地 BGE 检索，DeepSeek 带可定位引用回答。
 - FastAPI 内部接口：`X-Internal-Token` 认证的上传、状态查询与问答封装。
-- Compose 只启动 PostgreSQL/pgvector，SQL 初始化 `vector` 扩展与 `rag` schema。
+- Compose 启动 PostgreSQL/pgvector 与 Spring Boot；Python FastAPI 仍可单独启动。
 - Markdown / 文本 PDF 上传（10 MB + magic bytes 校验）切片、Embedding 并写入 pgvector。
+- Spring Security + 短期 JWT、登录限流、JPA/Flyway、服务时段查询、预约草案、幂等确认、原子容量扣减、我的预约、取消回补与关键审计。
+- Java 管理员上传/状态接口只做代理，文件内容校验、解析和向量写入仍由 Python 负责。
 
-评测已扩展为 14 道知识库内、6 道知识库外，20/20 行为正确，Hit@5 100%。尚未接入 Java、Vue。详情见 [周 0 可行性记录](docs/09-week0-feasibility.md)、[周 1 评测结果](data/evaluation/week1_results.json) 和 [周 2 评测结果](data/evaluation/week2_results.json)。
+评测已扩展为 14 道知识库内、6 道知识库外，20/20 行为正确，Hit@5 100%。Java 测试包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。Vue 尚未接入。详情见 [周 0 可行性记录](docs/09-week0-feasibility.md)、[周 1 评测结果](data/evaluation/week1_results.json) 和 [周 2 评测结果](data/evaluation/week2_results.json)。
 
 ## 周 1 CLI
 
@@ -73,6 +75,33 @@ curl -X POST http://127.0.0.1:8010/internal/v1/rag/answer \
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run python -m care_agent_ai.week1_evaluation \
   --questions data/evaluation/week2_questions.jsonl \
   --output data/evaluation/week2_results.json
+```
+
+## 周 3 Java 主业务
+
+在 `.env` 中设置至少 32 字节的 `JWT_SECRET`，并确保 `INTERNAL_TOKEN` 与 Python 使用同一个值。启动数据库后，可用 Java 17 运行：
+
+```bash
+docker compose up -d postgres
+cd java-service
+JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home ./mvnw spring-boot:run
+```
+
+也可以从项目根目录启动数据库和 Java 容器：
+
+```bash
+docker compose up -d --build
+```
+
+Java 镜像构建使用仓库内 `java-service/docker-maven-settings.xml`，仅把 Maven Central 映射到国内镜像；它不会修改本机全局 Maven 配置。
+
+虚构演示账号：`demo_user / demo-user-2026`（USER）和 `demo_admin / demo-admin-2026`（ADMIN）。不要在生产环境复用这些账号或默认 Compose 密钥。
+
+运行 Java 单元与集成测试（需要 Docker）：
+
+```bash
+cd java-service
+JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home ./mvnw test
 ```
 
 ## MVP 唯一路径

@@ -126,3 +126,29 @@
 - 纯扫描件在 `chunk_pdf_text` 阶段以 `SCAN_REQUIRES_MANUAL_MARKDOWN` 标记任务 FAILED，不调用 OCR；扩展名/MIME/大小/magic 校验则在建文档行之前以 4xx 拒绝。
 - 已知限制：内部上传的 Token 校验在 FastAPI 依赖链中执行，未能在读取 multipart body 之前截断超大请求；周 3 Java 管理员代理会先做权限与大小检查再转发。
 - 周 2 评测集中 `w2-out-02` 最初用“养老机构消防验收材料”被误召回（topScore 0.587 → 误判 ANSWER_WITH_CITATION），换成“居民用电阶梯电价”后正确拒答；最终 14 库内 Hit@5 100%、6 库外全部正确拒答，20/20。
+
+## 2026-09-06 周 3 启动约束
+
+- Java 公开预约确认接口只接受 `draftId`，幂等键只从 `Idempotency-Key` 请求头取得；未知的价格、用户、服务、时段或状态字段必须被 DTO 拒绝。
+- 确认事务顺序固定为：按用户和幂等键查重 → 原子消费本人未过期草案 → 校验启用服务和对应时段 → 条件扣减容量 → 读取数据库现价创建预约 → 写审计；任一步失败整体回滚。
+- 取消只允许本人 `CONFIRMED → CANCELLED`；只有状态更新成功时才回补一次容量并写审计，重复取消返回已有状态。
+- 周 3 管理员上传仅负责 ADMIN 授权、大小/文件名初检和调用 Python 内部接口；不得在 Java 重写 PDF/Markdown 解析与 Embedding。
+- 登录限流只用单进程内存固定窗口，键为规范化 IP 与 username，10 分钟最多 5 次失败；Redis 不进入 MVP。
+- 本机 Java 17.0.20.1 可用，但默认 `java` 是 25.0.4.1；周 3 的所有 Maven 命令必须显式设置 `JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home`。
+- 本机仍无全局 Maven；采用提交 Maven Wrapper 的项目内方案，不安装全局 Maven。
+- Spring Boot 3 系列当前官方维护线选择 `3.5.16`：官方要求 Java 17+、Maven 3.6.3+，与项目已锁定的 Java 17 一致；不升级到 Spring Boot 4。
+- JWT 使用 Spring Security Resource Server 与其自带 Nimbus JOSE 支持，密码使用 Spring Security BCrypt，不另引入第三方 JWT 或密码库。
+
+## 2026-09-06 周 3 实现结论
+
+- Java 服务已固定为 Java 17 + Spring Boot 3.5.16 + JPA + Flyway；仓库提交 Maven Wrapper，不要求本机安装全局 Maven。
+- `app` schema 由两条 Flyway 迁移创建和填充：用户、服务、时段、草案、预约和关键审计表；Hibernate 只做 schema 校验，不自动改表。
+- 登录使用 BCrypt 与 HS256 JWT；失败限流按规范化 IP + username 做单进程固定窗口，成功登录会清除该键的失败计数。
+- 预约确认事务采用数据库条件更新：先按用户与幂等键查重，再原子消费本人未过期草案、校验服务和时段、条件扣减余量、按数据库现价建单并写审计；并发失败整体回滚。
+- 取消在锁定本人预约后只允许一次 `CONFIRMED → CANCELLED`；只有首次状态迁移会回补容量和写审计，重复取消只返回现有结果。
+- 100 个草案并发竞争容量 10 的真实 PostgreSQL 测试中，成功数严格为 10、余量为 0、预约行数为 10，没有超卖。
+- 管理员知识上传仅做角色、文件名、扩展名和 10 MB 大小初检，再以内部 Token 转发给 Python；MIME、magic bytes、解析、切片与 Embedding 仍由 Python 负责。
+- PostgreSQL 对可空 JPQL 参数出现 `42P18 could not determine data type`；最终使用四个明确查询方法覆盖筛选组合，避免数据库猜测空参数类型。
+- 真实本地 HTTP 冒烟已验证登录、服务与时段、草案、首次确认 201、同键重放 200、未知价格字段 400、取消两次只回补一次，以及三类审计记录。
+- 最终 Java 测试为 6/6（含管理员 RBAC、JWT、请求 ID、限流、幂等、取消和并发）；Python 回归为 34/34，均无失败。
+- Java 多阶段镜像构建成功；Compose 中 PostgreSQL 为 healthy，Java `/health` 返回 `{"status":"ok"}`。验证后停止 Java 容器释放 8080，保留此前已运行的 PostgreSQL。

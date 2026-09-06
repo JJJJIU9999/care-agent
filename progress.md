@@ -163,3 +163,31 @@
 - 初始提交 `4ea9157`“初始提交：周 0-2 完成（可行性验证、最小 CLI RAG、FastAPI 导入链路与 pgvector rag schema）”。
 - 已创建公开仓库 `https://github.com/JJJJIU9999/care-agent` 并推送 `main`，`origin/main` 跟踪正常。
 - 下一步唯一任务：进入周 3 时从 `main` 检出新分支（如 `week3`）后再提交，保持按阶段分叉的历史。
+
+## 2026-09-05 写入权交接
+
+- `WRITER_HANDOFF: DeepSeek Harness -> Codex`
+- 已完成工作：周 2 FastAPI 与导入链路全部完成并验收——FastAPI 封装周 1 CLI 能力、Compose 仅启动 PostgreSQL/pgvector、SQL 初始化 `vector` 扩展与 `rag` schema、带 `X-Internal-Token` 的内部上传与状态查询接口、Markdown/文本 PDF 10 MB + magic bytes 校验、评测集扩展为 14 库内 + 6 库外；并完成 GitHub 仓库初始化与推送。
+- 交接前状态：项目已初始化为 Git 仓库并推送到 `github.com/JJJJIU9999/care-agent`（main，最新提交 `615654f`），工作树干净，`origin/main` 跟踪正常。
+- 验证命令与结果：`UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run pytest -q` → 34/34 通过，保留 1 条既有 Starlette/AnyIO 上游弃用警告；周 2 离线评测 20/20 行为正确、Hit@5 100%；端到端链路（上传 → pgvector → 状态 → 余弦检索）已在真实 pgvector 容器验证。
+- 已知失败/未完成：无阻断项；异步后台导入（202 PENDING + GET 轮询）按路线图留给周 3 Java 代理接入时实现；`.env` 尚缺 `INTERNAL_TOKEN` 与 `RAG_DATABASE_URL`（用户需自行补充，交接全程未读取或展示其值）。
+- 唯一下一步任务：由 Codex 进入周 3，从 `main` 检出新分支（如 `week3`），实现 Spring Security/JWT、JPA/Flyway、服务与时段种子数据、预约草案与确认事务（原子消费、幂等、容量扣减、取消回补）。
+
+## 2026-09-06 周 3 启动
+
+- 已确认 `CURRENT_WRITER: Codex`，Harness 的周 2 交接记录完整；接收复核为 34/34 测试通过。
+- 已从 `main` 创建并切换到 `week3` 分支；Harness 写入的交接状态与进度记录作为该分支的预期未提交变更保留，未覆盖或清理。
+- 已在 `task_plan.md` 建立周 3 Java 主业务清单，并再次确认唯一边界：Java 17、Spring Boot 3、JPA、Flyway、JWT、预约事务；不提前开发 Vue、Redis、OCR 或全文检索。
+- 当前执行切片：完整核对 API、数据、安全与测试契约，再建立可测试的最小 Java/Flyway 基线。
+
+## 2026-09-06 周 3 完成
+
+- 新增 `java-service/`：Spring Boot 3.5.16、Java 17、Maven Wrapper、JPA、Flyway、Spring Security JWT、BCrypt、Testcontainers 和容器构建文件。
+- 完成公开业务闭环：登录、服务/时段查询、我的预约、取消；完成内部预约草案接口与管理员知识文档代理。
+- 确认接口只接收 `draftId`，价格、用户、服务和时段均不接受客户端覆盖；幂等键来自请求头，数据库负责草案消费和容量条件更新。
+- Flyway 已在真实 PostgreSQL 16.15 上创建 `app` schema、应用 V1/V2 并通过 JPA validate；演示服务、时段和虚构用户可用于本地验证。
+- 真实 HTTP 冒烟：登录成功；服务查询成功；草案创建成功；首次确认 201、同键重放 200；未知 `price` 字段返回 400；容量确认后 10→9，重复取消后只恢复一次至 10；CREATE/CANCEL/LOGIN 审计均存在。
+- 最终 Java 测试 6/6 通过；100 个并发确认竞争容量 10 时严格成功 10 个且余量为 0。Python 原有测试 34/34 通过，`docker compose config --quiet` 通过。
+- Java 多阶段镜像构建成功；Compose 启动后 PostgreSQL healthy，Java `/health` 返回 `{"status":"ok"}`。验证后已停止 Java 容器释放 8080，保留原本运行的 PostgreSQL。
+- 当前分支为 `week3`；周 3 验收内容按同名分支独立提交与推送，具体提交以 Git 历史为准。用户真实 `.env` 未被修改或输出，手动启动前仍需按 `.env.example` 补充相同的 `INTERNAL_TOKEN`、`JWT_SECRET` 和数据库配置。
+- 下一步唯一任务：进入周 4，先固定 `/api/v1/agent/runs` 的 SSE 事件协议，再把 Java 的认证用户与 Python RAG/预约草案串成一条可中断、可确认的 Agent 流程。

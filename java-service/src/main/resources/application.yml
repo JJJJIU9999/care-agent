@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${APP_DATABASE_URL:jdbc:postgresql://localhost:5432/careagent}
+    username: ${APP_DATABASE_USER:careagent}
+    password: ${POSTGRES_PASSWORD:careagent_local_dev}
+  flyway:
+    create-schemas: true
+    default-schema: app
+    schemas: app
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: app
+        jdbc:
+          time_zone: UTC
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+
+careagent:
+  jwt:
+    secret: ${JWT_SECRET:}
+    ttl: PT15M
+  internal-token: ${INTERNAL_TOKEN:}
+  python-base-url: ${PYTHON_BASE_URL:http://127.0.0.1:8010}

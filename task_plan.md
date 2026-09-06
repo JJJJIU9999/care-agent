@@ -92,6 +92,22 @@
 
 14 道库内 Hit@5 100%、6 道库外全部正确拒答，20/20 行为正确；上传/状态/问答接口通过内部 Token 认证，Markdown/文本 PDF 导入写入 pgvector。周 2 不接 Java、Vue、Alembic 或全文检索。
 
+## 周 3 Java 主业务（已完成）
+
+- [x] 从 `main` 创建独立 `week3` 分支并保留交接记录
+- [x] 核对 Java 17、Maven Wrapper 和周 3 API/数据/安全契约
+- [x] 建立最小 Spring Boot 3、JPA 与 Flyway 基线
+- [x] 实现 Spring Security、JWT 登录和登录限流
+- [x] 实现服务、时段种子数据与只读查询
+- [x] 实现预约草案、确认幂等、原子容量扣减、取消状态守卫与容量回补
+- [x] 保留登录、下单和取消三类审计记录
+- [x] 实现管理员上传代理接口，不复制 Python 导入逻辑
+- [x] 运行单元、数据库和并发预约验证并更新证据
+
+### 周 3 边界
+
+只实现路线图列出的 Java 主业务闭环；不开发 Vue、服务管理 CRUD、通用审计框架、Redis、Kubernetes、OCR 或全文检索。最终预约只信任 `draftId`、当前认证用户和 `Idempotency-Key`。
+
 ## 错误记录
 
 | 日期 | 问题 | 处理 |
@@ -115,3 +131,12 @@
 | 2026-09-05 | BGE 缓存复跑仍尝试联网检查可选配置并触发 DNS 重试 | 中止等待，使用 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` 后离线复跑成功 |
 | 2026-09-05 | 记忆中曾记录另一个 `DeepSeekHarness/start.command` 路径，但现场文件不存在 | 以现场存在的 `DeepSeekHarness/Harness_start.command` 为准，不创建或覆盖用户启动脚本 |
 | 2026-09-05 | 周 1 首轮地域正则把“省本级……成都市”误判为库外地名，评测为 9/10 | 支持地域出现时优先放行，再对其他明确行政区问题拒答；新增回归测试后为 10/10 |
+| 2026-09-06 | 周 3 启动时默认 Java 为 25，且没有全局 `mvn` | 所有 Java 构建显式使用 Temurin 17，并提交 Maven Wrapper，不修改系统默认 Java |
+| 2026-09-06 | 受限环境内 `docker info` 无权访问 Docker socket | 先按环境限制记录；需要数据库集成验证时仅对 Docker 命令申请最小授权 |
+| 2026-09-06 | Python 虚拟环境没有 `bcrypt`，不能用它生成演示密码哈希 | 不增加 Python 依赖；使用系统 `htpasswd` 生成虚构演示账号的 BCrypt 哈希，并由 Spring Security 验证 |
+| 2026-09-06 | Maven Central 在本机和容器内多次 TLS 超时 | 本地验证先使用 `/private/tmp` 设置；Java 镜像再使用仓库内仅镜像 `central` 的可审计设置，未修改用户全局 Maven，依赖坐标保持不变 |
+| 2026-09-06 | 第一版测试代码的 Java 文本块语法不合法 | 改为普通 JSON 字符串，未引入额外测试工具 |
+| 2026-09-06 | 服务查询使用可空 JPQL 参数时 PostgreSQL 报 `42P18` | 拆成四个明确的 Spring Data 查询方法，避免未定类型的空参数 |
+| 2026-09-06 | 受限环境首次无法访问本机 Docker socket | 以最小本机权限复跑 Testcontainers；真实 PostgreSQL 集成测试 6/6 通过 |
+| 2026-09-06 | Docker CLI 凭证助手在非交互环境中挂起 | 使用 `/private/tmp` 下的空 Docker 配置并直接调用 Compose 插件，不修改用户 Docker 配置 |
+| 2026-09-06 | Python 回归首次无法写默认 `uv` 缓存 | 继续使用项目内 `UV_CACHE_DIR=.uv-cache` 并离线运行，34/34 通过 |
