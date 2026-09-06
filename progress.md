@@ -239,3 +239,30 @@
 - 实际失败与修复均已保留在 `task_plan.md`：包括依赖锁网络、事件参数重名、胰岛素题医疗分类、Linux CUDA 镜像、Java 镜像预下载、Spring 构造器选择和价格 JSON 类型。本轮另有两次 Maven settings 相对路径写错，均在测试执行前失败，最终使用仓库实际文件重跑通过。
 - 限制：服务型本地冒烟不调用外部模型；模型流和政策引用路径由自动化测试覆盖。未运行计划中的 20 路 SSE 压测，不声明生产并发或开放领域效果。
 - 周 4 已按 `care-agent-weekly-github-publish` 完成发布前审计；本次提交正常推送并核对远端哈希后，唯一下一步是按路线图进入周 5 Vue 页面，不提前实现后续基础设施。
+
+## 2026-09-06 写入权交接
+
+- `WRITER_HANDOFF: Codex -> DeepSeek Harness`
+- 已完成工作（依据 Codex 在 progress.md 中的周 3/周 4 记录整理，非 Harness 新增实现）：周 3 Java 主业务与预约事务（Spring Boot 3 / Java 17 / Maven Wrapper / JPA / Flyway / JWT、登录、服务与时段、草案、确认幂等、容量扣减、取消回补、审计、100 并发防超卖）；周 4 Agent 与 SSE（会话契约 `POST /api/v1/conversations/{id}/messages`、Java 可取消上游代理、Python `agent.py` 确定性路由与内部 SSE、pgvector 政策引用、Nginx SSE、四容器 Compose、21+9 评测）。
+- 交接前状态：分支 `week4`（跟踪 `origin/week4`），工作树干净，最新提交 `f2d9bfb`；`CURRENT_WRITER` 原为 `Codex`。
+- 验证命令与结果：本次重跑 `UV_CACHE_DIR=.uv-cache HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run --offline pytest -q` → 46 passed / 0 failed，保留 1 条 Starlette/AnyIO 上游弃用警告；Java 测试按 Codex 记录为 10/10（`JAVA_HOME=…/temurin-17.jdk/Contents/Home ./mvnw -s docker-maven-settings.xml test`，Testcontainers PostgreSQL 16.15，Flyway V1–V3），本次交接未重跑 Java 套件。
+- 已知失败/未完成：未运行计划中的 20 路 SSE 压测；本地服务型冒烟不调用外部模型（模型流与政策引用路径由自动化测试覆盖）；不声明生产并发或开放领域效果。
+- 唯一下一步任务：进入周 5，从干净的 `week4` 创建累计分支 `week5`，实现 Vue 3 核心界面（登录 → 聊天工作台 → 引用侧栏 → 服务卡片 → 草案确认 → 我的预约/取消，有余量再做管理员上传页），不提前实现后续基础设施。
+
+## 2026-09-06 周 5 启动
+
+- 已确认 `CURRENT_WRITER: DeepSeek Harness`，工作树干净，当前分支 `week4`（最新提交 `f2d9bfb`）。
+- 已读取产品需求、API 契约、架构与测试文档，并核对 Java 实际暴露的公开 API（登录/会话/SSE/服务/预约/管理员上传）与 SSE 七类事件，确保前端按真实契约实现。
+- 已固定前端栈：Vue 3 + TypeScript + Vite + Element Plus + Vue Router；不引入 Pinia、axios 或 SSE 库，用原生 fetch 与自写 POST-SSE 解析，符合最小依赖原则。
+
+## 2026-09-06 周 5 完成
+
+- 新增 `web/`：Vue 3 + TS + Vite + Element Plus，完成 Element Plus 主色/圆角/字体主题定制（思源宋体标题 + 思源黑体正文、暖纸背景、深青绿主色 + 暖杏橙强调、大字号高对比）。
+- 页面：登录（demo 账号一键填充、JWT 存储、路由守卫、401 回跳）、聊天工作台（创建会话 + POST SSE 流式 token、status 提示、七类事件分发、停止）、引用侧栏 + 内联引用、服务卡片、草案确认（draftId + 幂等键）、我的预约与取消、管理员文档上传页。
+- 前端容器化：`web/Dockerfile`（Node 构建 → Nginx 提供 SPA）+ `web/nginx.conf`（SPA 回退 + `/api` 代理 + SSE 无缓冲）；Compose 用 `web` 服务替换原 `nginx`，删除 `nginx/default.conf`。
+- 构建与类型检查：`npm run typecheck`（vue-tsc）通过；`npm run build` 成功产出 `web/dist`（1640 模块）。
+- 端到端冒烟（Vite 代理 → 运行中后端）：登录 demo_user → 建会话 → SSE 服务问题得到 `status×3 + service_card + tool_confirmation + done`，提取 draftId → 确认下单 `CONFIRMED` → 我的预约含该条 → 取消 `CANCELLED`；政策问题实测流式答案“80周岁及以上”并带 5 条 citation 事件。
+- Compose 集成：`care-agent-web` 容器在 8088 提供 SPA（`/` 与 `/login` 均返回 index.html 回退）、`/health` 代理 200、`/api/v1/services` 无 token 401 / 有 token 返回服务列表。
+- 验证命令：`web/ npm run typecheck`、`web/ npm run build`；`docker compose config --quiet` 通过；`DOCKER_BUILDKIT=0 docker compose build web` 成功（受限环境 BuildKit 活动目录不可写，改用经典构建器，产物一致）。
+- 已知限制：手机端为基础响应式；Element Plus 全量引入，主包约 1 MB（gzip 约 345 KB），仅提示分块警告；20 路 SSE 压测与演示视频仍属周 6。
+- 下一步唯一任务：按 `care-agent-weekly-github-publish` 发布 `week5` 分支后进入周 6（35+15 评测、4 个提示注入测试、20 路 SSE 与断连、100 并发防超卖、SQL 执行计划、Compose 健康检查与 CI、README/架构/接口终校、演示视频）。

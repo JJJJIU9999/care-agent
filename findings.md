@@ -185,3 +185,13 @@
 - 本地完整链路实测事件顺序为 `status,status,service_card,status,tool_confirmation,done`，所有事件 Request ID 一致，`tool_confirmation` 含 Java 真实草案 UUID、`"80.00"` 权威价格和过期时间。
 - 最终 Python 回归 46/46、Java 回归 10/10、Compose 配置校验通过。固定 21+9 题为 30/30，Hit@1/Hit@5/MRR 均为 100%，索引 140.49 ms、平均 2.78 ms、P95 4.40 ms；不外推到模型引用或生产性能。
 - 20 路 SSE 测试仍按路线图属于周 6，本周没有运行或宣称完成；Vue、Redis、Kubernetes、OCR、全文检索、复杂框架与长期记忆均未进入周 4。
+
+## 2026-09-06 周 5 实现结论
+
+- 前端栈固定为 Vue 3 + TypeScript + Vite + Element Plus + Vue Router；用原生 fetch 与自写 POST-SSE 解析器消费会话消息接口，不引入 axios、Pinia 或 SSE 库，符合最小依赖原则。
+- 会话消息是 POST 接口，原生 `EventSource` 只支持 GET，因此手动解析 `event:`/`data:` 帧；只消费契约允许的七类事件，`X-Request-ID` 用 `crypto.randomUUID()` 生成。
+- JWT 存 localStorage，路由守卫拦截未登录与管理员路由；任意接口 401 统一清会话并跳回登录。确认下单仍只提交 `draftId` + `Idempotency-Key`，前端不传价格/服务/时段。
+- 设计系统：暖纸背景 + 深青绿主色 + 暖杏橙强调；标题用思源宋体（可信/人文），正文用思源黑体；面向老人加大字号与对比度。Element Plus 通过 CSS 变量覆盖主色与明暗梯度，采用全量引入（主包约 1 MB，gzip 约 345 KB）。
+- 政策引用路径复用周 4 pgvector 检索：实测政策问题返回流式答案与 5 条 citation（含 documentId/标题/机构/章节/页码/原文），前端侧栏与内联引用均可渲染；`confirmedPrice` 在预约视图为 JSON 数字，前端统一格式化展示。
+- 受限环境事实：全局 npm 缓存目录含 root 文件导致 EPERM，改用临时缓存目录安装；Docker BuildKit 活动目录不可写，构建 `web` 镜像用 `DOCKER_BUILDKIT=0` 经典构建器绕过（产物一致）。
+- 未进入周 5 的实现：Redis、Kubernetes、OCR、全文检索、复杂 Agent 框架、长期记忆；20 路 SSE 压测与演示视频属周 6。

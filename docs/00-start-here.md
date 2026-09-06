@@ -2,7 +2,7 @@
 
 ## 项目状态
 
-截至 2026-09-06，CareAgent 的周 0–4 均已通过验收。周 4 已完成三类确定性路由、两项受控工具、Java/Python SSE 与断连取消、Request ID 日志、Nginx 无缓冲配置和 21+9 固定评测；Java 测试 10/10、Python 回归 46/46，真实 Compose SSE 冒烟通过。周 4 验收内容位于累计 `week4` 分支；下一步按路线图进入周 5 Vue 页面。
+截至 2026-09-06，CareAgent 的周 0–5 均已通过验收。周 5 已用 Vue 3 + TypeScript + Vite + Element Plus 实现登录、聊天工作台、引用侧栏、服务卡片、草案确认、我的预约/取消与管理员上传页，并通过 Compose/Nginx 接入 Vue 构建产物；唯一路径端到端冒烟通过。下一步按路线图进入周 6（证据收口与演示）。
 
 ## 阅读顺序
 
@@ -65,9 +65,10 @@ $care-agent-weekly-github-publish 把当前周 4 阶段提交并推送
 先完整阅读 README.md、AGENTS.md、task_plan.md、findings.md、progress.md
 以及 docs/00-start-here.md 到 docs/09-week0-feasibility.md。
 
-当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 5，
-只实现登录、对话、引用、服务卡片、预约确认和我的预约页面，
-不扩展周 4 Agent/SSE 契约与周 3 预约事务。
+当前唯一任务：按 docs/07-roadmap-and-handoff.md 进入周 6，
+完成 35+15 评测、4 个提示注入测试、20 路 SSE 与断连测试、100 并发防超卖、
+SQL 执行计划、Compose 健康检查与 CI 收口、README/架构/接口终校和演示视频。
+不扩展周 4 Agent/SSE 契约、周 3 预约事务或周 5 页面范围；
 不要提前接入 Redis、Kubernetes、OCR 或全文检索。
 
 你拥有当前工作树写入权，可以在既定范围内实现、测试和修复；同一时间另一代理不会写入。

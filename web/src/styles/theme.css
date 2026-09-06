@@ -1,0 +1,127 @@
+/* ==========================================================================
+   CareAgent 主题：温暖、沉稳、可读的“养老关怀”视觉体系
+   面向老人及家属：大字号、高对比、柔和圆角、克制的动效。
+   ========================================================================== */
+
+:root {
+  /* 品牌色板 */
+  --ca-primary: #0e7a6b;        /* 深青绿：信任、健康 */
+  --ca-primary-deep: #0a5b50;
+  --ca-accent: #e8895a;         /* 暖杏橙：关怀、行动 */
+  --ca-accent-deep: #d96b36;
+  --ca-bg: #f5f1e8;             /* 暖纸色 */
+  --ca-bg-deep: #efe9dc;
+  --ca-surface: #ffffff;
+  --ca-ink: #292a26;            /* 暖炭黑 */
+  --ca-ink-soft: #6f6f66;
+  --ca-ink-faint: #9a998f;
+  --ca-line: #e7dfd1;
+  --ca-success: #2f9e6e;
+  --ca-danger: #d4534a;
+
+  /* Element Plus 主色覆盖（含明暗梯度，保证对比度一致） */
+  --el-color-primary: var(--ca-primary);
+  --el-color-primary-light-3: #3e9689;
+  --el-color-primary-light-5: #6fb1a6;
+  --el-color-primary-light-7: #9fccc4;
+  --el-color-primary-light-8: #b8d9d3;
+  --el-color-primary-light-9: #d7eae6;
+  --el-color-primary-dark-2: var(--ca-primary-deep);
+  --el-color-success: var(--ca-success);
+  --el-color-danger: var(--ca-danger);
+  --el-color-warning: var(--ca-accent);
+
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --el-text-color-primary: var(--ca-ink);
+  --el-text-color-regular: var(--ca-ink-soft);
+  --el-border-color: var(--ca-line);
+  --el-border-color-light: #efe9dd;
+  --el-fill-color-light: #faf7f0;
+  --el-bg-color-page: var(--ca-bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--el-font-family);
+  color: var(--ca-ink);
+  background-color: var(--ca-bg);
+  background-image:
+    radial-gradient(1200px 600px at 12% -8%, rgba(14, 122, 107, 0.08), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(232, 137, 90, 0.10), transparent 55%);
+  background-attachment: fixed;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 展示/标题字体：思源宋体，传达人文与可靠 */
+.font-display {
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+}
+
+::selection {
+  background: rgba(14, 122, 107, 0.18);
+}
+
+/* 卡片 */
+.ca-card {
+  background: var(--ca-surface);
+  border: 1px solid var(--ca-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -18px rgba(41, 42, 38, 0.28);
+}
+
+/* 品牌徽记 */
+.ca-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ca-primary), #16a08b);
+  flex: none;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6cdbd;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c2b7a4;
+  background-clip: content-box;
+}
+
+/* Element Plus 细节微调 */
+.el-button {
+  font-weight: 500;
+}
+.el-button--primary {
+  --el-button-hover-bg-color: var(--ca-primary-deep);
+}
+.el-dialog {
+  border-radius: 16px;
+}
+.el-message {
+  border-radius: 12px;
+}

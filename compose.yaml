@@ -1,4 +1,4 @@
-# CareAgent 周 4：PostgreSQL/pgvector + Java + FastAPI + Nginx SSE。
+# CareAgent 周 5：PostgreSQL/pgvector + Java + FastAPI + Vue/Nginx 前端。
 #
 # POSTGRES_PASSWORD 是仅用于本机演示的容器口令，可用环境变量覆盖，禁止在生产复用。
 services:
@@ -63,13 +63,12 @@ services:
       postgres:
         condition: service_healthy
 
-  nginx:
-    image: nginx:1.29-alpine
-    container_name: careagent-nginx
+  web:
+    build:
+      context: ./web
+    container_name: careagent-web
     ports:
       - "8088:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - java-service
 

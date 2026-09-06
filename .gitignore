@@ -6,6 +6,8 @@ __pycache__/
 .model-cache/
 *.pyc
 java-service/target/
+web/node_modules/
+web/dist/
 
 # macOS
 .DS_Store

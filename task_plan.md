@@ -153,6 +153,21 @@
 - 在未获决定前，不会私自选择公开路由，也不会新增迁移、会话存储或绕过归属校验。需要用户明确采用 API 契约会话路由（并授权最小会话迁移/API），或将契约统一为无会话的 `/api/v1/agent/runs` 及其所有权替代规则。
 - [x] 用户已于 2026-09-06 确认采用 `docs/03-api-contract.md` 的会话路由，并授权最小 `conversation` / `message_metadata` 迁移与会话 API；阻断解除。
 
+## 周 5 Vue 核心界面（已完成）
+
+- [x] Vue 3 + TypeScript + Vite + Element Plus + Vue Router 脚手架与 Element Plus 主题定制
+- [x] 登录页：demo 账号、JWT 存储、路由守卫、401 回跳
+- [x] 聊天工作台：创建会话 + POST SSE 流式渲染（七类事件分发、停止）
+- [x] 引用侧栏 + 内联引用、服务卡片、草案确认（draftId + 幂等键）
+- [x] 我的预约列表与取消（幂等键、容量回补）
+- [x] 管理员文档上传页（Markdown/文本 PDF、10 MB、magic bytes）
+- [x] 基础响应式（移动端可点击可走通流程）
+- [x] 构建验证（vue-tsc + vite build）与 Compose/Nginx 接入 Vue 构建产物
+
+### 周 5 边界
+
+不开发 Redis、Kubernetes、OCR、全文检索、复杂 Agent 框架或长期记忆；不重写周 3 预约确认事务；确认下单仍只提交 `draftId` + `Idempotency-Key`；20 路 SSE 压测与演示视频仍属周 6。
+
 ## 错误记录
 
 | 日期 | 问题 | 处理 |
@@ -193,3 +208,5 @@
 | 2026-09-06 | CPU-only Python 镜像成功后，Java 镜像停在非必要的 `dependency:go-offline` 超过 90 秒无输出 | 中止挂起；删除预下载层，直接执行已有的 Maven package 构建以减少一个不稳定网络阶段 |
 | 2026-09-06 | 周 4 首次完整 Compose 启动时 PostgreSQL/Python 健康，但 Java 退出，Nginx `/health` 返回 502 | 日志定位为测试辅助构造器加入后 Spring 无法选择生产构造器；显式标注生产构造器注入，重建后复验 |
 | 2026-09-06 | 首次公开 SSE 冒烟完成到 `done` 且 Request ID 一致，但真实草案检查发现 `displayPrice` 为 JSON 数字而非契约字符串 | 在 Java 权威服务/草案 DTO 层按数据库金额输出两位小数字符串，增加断言后重建复验；不修改模型或草案数据来源 |
+| 2026-09-06 | 前端 `npm install` 因全局 npm 缓存含 root 文件报 EPERM | 改用临时缓存目录（`npm_config_cache`）安装，未修改用户全局 npm 配置 |
+| 2026-09-06 | `docker compose build web` 因 BuildKit 活动目录不可写失败 | 使用 `DOCKER_BUILDKIT=0` 经典构建器构建，产物一致 |

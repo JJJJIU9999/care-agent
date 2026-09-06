@@ -15,7 +15,7 @@ CareAgent 是一个面向老人及家属的养老政策问答与上门服务预�
 - Spring Security + 短期 JWT、登录限流、JPA/Flyway、服务时段查询、预约草案、幂等确认、原子容量扣减、我的预约、取消回补与关键审计。
 - Java 管理员上传/状态接口只做代理，文件内容校验、解析和向量写入仍由 Python 负责。
 
-固定评测已扩展为 21 道知识库内、9 道知识库外，30/30 行为正确，Hit@1、Hit@5、MRR 均为 100%；这只代表当前 7 个固定切片和题集，不代表开放领域或模型引用正确率。Python 回归为 46/46，Java 回归为 10/10。周 3 的 Java 测试仍包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。计划中的 20 路 SSE 测试属于周 6，本周未运行。Vue 尚未接入。详情见 [周 4 评测结果](data/evaluation/week4_results.json)。
+固定评测已扩展为 21 道知识库内、9 道知识库外，30/30 行为正确，Hit@1、Hit@5、MRR 均为 100%；这只代表当前 7 个固定切片和题集，不代表开放领域或模型引用正确率。Python 回归为 46/46，Java 回归为 10/10。周 3 的 Java 测试仍包含 100 个请求竞争容量 10 的防超卖验证；这不是生产吞吐承诺。计划中的 20 路 SSE 测试属于周 6，本周未运行。Vue 前端已于周 5 接入并验证。详情见 [周 4 评测结果](data/evaluation/week4_results.json)。
 
 ## 周 1 CLI
 
@@ -134,6 +134,31 @@ curl -N -X POST http://127.0.0.1:8088/api/v1/conversations/<conversationId>/mess
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 uv run python -m care_agent_ai.week1_evaluation \
   --questions data/evaluation/week4_questions.jsonl \
   --output data/evaluation/week4_results.json
+```
+
+## 周 5 Vue 前端
+
+前端位于 `web/`（Vue 3 + TypeScript + Vite + Element Plus）。本地开发：
+
+```bash
+cd web
+npm install --no-audit --no-fund
+npm run dev        # 默认 5173，/api 代理到 8088（需先启动后端）
+```
+
+生产构建与 Compose 集成（`web` 服务用 Node 构建、Nginx 提供 SPA 并代理 `/api` 与 SSE）：
+
+```bash
+docker compose up -d --build
+# 浏览器访问 http://127.0.0.1:8088
+```
+
+页面：登录、聊天工作台（SSE 流式回答 + 引用侧栏 + 服务卡片 + 草案确认）、我的预约与取消、管理员文档上传。演示账号见「周 3」章节。
+
+```bash
+cd web
+npm run typecheck   # vue-tsc 类型检查
+npm run build       # 产出 web/dist
 ```
 
 ## MVP 唯一路径
